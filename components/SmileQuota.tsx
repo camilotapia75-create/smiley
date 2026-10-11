@@ -2,10 +2,11 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Camera, Settings, Bell, BellOff, ChevronDown, X, Share2 } from 'lucide-react';
+import { Camera, Settings, Bell, BellOff, ChevronDown, X, Share2, Sparkles, Lock } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useFaceLandmarker } from '@/hooks/useFaceLandmarker';
 import { usePoseLandmarker } from '@/hooks/usePoseLandmarker';
+import { useSubscription } from '@/hooks/useSubscription';
 
 function SmileyLogo() {
   return (
@@ -253,6 +254,10 @@ function statusMsg(count: number, mode: SessionMode, superActive: boolean, super
 export default function SmileQuota() {
   const { isReady, detectSmile }                   = useFaceLandmarker();
   const { detect: detectPose, isReady: poseReady } = usePoseLandmarker();
+  const { isPro, loading: proLoading, subscribe }  = useSubscription();
+  const [showProModal, setShowProModal]            = useState(false);
+  const [proEmail, setProEmail]                    = useState('');
+  const [proLoading2, setProLoading2]              = useState(false);
 
   const videoRef           = useRef<HTMLVideoElement>(null);
   const canvasRef          = useRef<HTMLCanvasElement>(null);
@@ -503,7 +508,13 @@ export default function SmileQuota() {
             <div className="flex items-center gap-2.5">
               <SmileyLogo />
               <div>
-                <h1 className="text-xl font-bold tracking-tight text-white leading-tight">Smiley</h1>
+                <div className="flex items-center gap-2">
+                  <h1 className="text-xl font-bold tracking-tight text-white leading-tight">Smiley</h1>
+                  {isPro && !proLoading && (
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md"
+                      style={{ background: 'linear-gradient(135deg,#d97706,#f97316)', color: '#0a0a0f' }}>PRO</span>
+                  )}
+                </div>
                 <p className="text-xs" style={{ color: '#5b8dd9' }}>Daily smile quota</p>
               </div>
             </div>
@@ -869,27 +880,37 @@ export default function SmileQuota() {
                 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
                 transition={{ delay: 0.06 }}
                 className="rounded-2xl p-4 mb-4"
-                style={{ background: 'rgba(4,12,30,0.88)', border: '1px solid rgba(245,158,11,0.35)' }}
+                style={{ background: 'rgba(4,12,30,0.88)', border: `1px solid ${isPro ? 'rgba(245,158,11,0.35)' : 'rgba(255,255,255,0.1)'}` }}
               >
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-sm">⚡</span>
-                  <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'rgba(245,158,11,0.7)' }}>
-                    Super Smile Day
-                  </span>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm">⚡</span>
+                    <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: isPro ? 'rgba(245,158,11,0.7)' : '#4a6b9e' }}>
+                      Super Smile Day
+                    </span>
+                  </div>
+                  {!isPro && <Lock size={13} style={{ color: '#4a6b9e' }} />}
                 </div>
                 <p className="text-[13px] leading-relaxed mb-4" style={{ color: '#7aa8d4' }}>
                   Smile <span className="text-white font-semibold">10 more times</span> to unlock a Super Smile Day — double the dopamine, double the glory.
                 </p>
-                <button
-                  onClick={() => { setSuperActive(true); superActiveRef.current = true; saveSmileData({ superCount: 0 }); }}
-                  className="w-full py-3 rounded-xl font-semibold text-sm btn-press"
-                  style={{
-                    background: 'linear-gradient(135deg, #d97706, #f97316)',
-                    color: '#0a0a0f',
-                  }}
-                >
-                  Go Super ⚡
-                </button>
+                {isPro ? (
+                  <button
+                    onClick={() => { setSuperActive(true); superActiveRef.current = true; saveSmileData({ superCount: 0 }); }}
+                    className="w-full py-3 rounded-xl font-semibold text-sm btn-press"
+                    style={{ background: 'linear-gradient(135deg, #d97706, #f97316)', color: '#0a0a0f' }}
+                  >
+                    Go Super ⚡
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => setShowProModal(true)}
+                    className="w-full py-3 rounded-xl font-semibold text-sm btn-press text-white"
+                    style={{ background: 'linear-gradient(135deg, #2563eb, #38bdf8)', boxShadow: '0 4px 20px rgba(37,99,235,0.4)' }}
+                  >
+                    Unlock with Pro ✦
+                  </button>
+                )}
               </motion.div>
             )}
           </AnimatePresence>
@@ -897,6 +918,79 @@ export default function SmileQuota() {
           <div className="flex-1" />
         </div>
       </div>
+
+      {/* Pro upgrade modal */}
+      <AnimatePresence>
+        {showProModal && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="absolute inset-0 z-[100] flex items-end justify-center pb-6 px-4"
+            style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(6px)' }}
+            onClick={() => setShowProModal(false)}
+          >
+            <motion.div
+              initial={{ y: 60, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 60, opacity: 0 }}
+              transition={{ type: 'spring', damping: 22, stiffness: 300 }}
+              className="w-full max-w-sm rounded-3xl p-6"
+              style={{ background: 'rgba(4,12,30,0.97)', border: '1px solid rgba(255,255,255,0.12)' }}
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-5">
+                <div className="flex items-center gap-2">
+                  <Sparkles size={18} style={{ color: '#f97316' }} />
+                  <span className="text-lg font-bold text-white">Smiley Pro</span>
+                </div>
+                <button onClick={() => setShowProModal(false)} className="btn-press p-1">
+                  <X size={16} style={{ color: '#4a6b9e' }} />
+                </button>
+              </div>
+
+              <div className="flex flex-col gap-2.5 mb-6">
+                {[
+                  '⚡ Super Smile mode',
+                  '📅 Smile history & streaks',
+                  '🎯 Custom daily quota',
+                  '🔔 Smart reminders',
+                  '🎉 Share achievements',
+                ].map(f => (
+                  <div key={f} className="flex items-center gap-2.5 text-sm" style={{ color: '#93c5fd' }}>
+                    <span>{f}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex items-baseline gap-1 mb-5">
+                <span className="text-3xl font-bold text-white">$3</span>
+                <span className="text-sm" style={{ color: '#4a6b9e' }}>/month</span>
+              </div>
+
+              <input
+                type="email"
+                placeholder="your@email.com"
+                value={proEmail}
+                onChange={e => setProEmail(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl text-sm text-white bg-transparent border outline-none mb-3"
+                style={{ borderColor: 'rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.05)' }}
+              />
+              <button
+                disabled={!proEmail || proLoading2}
+                onClick={async () => {
+                  setProLoading2(true);
+                  await subscribe(proEmail);
+                  setProLoading2(false);
+                }}
+                className="w-full py-3.5 rounded-xl font-bold text-sm text-white btn-press disabled:opacity-50"
+                style={{ background: 'linear-gradient(135deg, #2563eb, #38bdf8)', boxShadow: '0 4px 24px rgba(37,99,235,0.5)' }}
+              >
+                {proLoading2 ? 'Redirecting…' : 'Start subscription →'}
+              </button>
+              <p className="text-center text-[11px] mt-3" style={{ color: '#4a6b9e' }}>
+                Cancel anytime · Secured by Stripe
+              </p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Scroll hint */}
       <AnimatePresence>
