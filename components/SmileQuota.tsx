@@ -6,24 +6,6 @@ import { Camera, Settings, Bell, BellOff, ChevronDown, X } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useFaceLandmarker } from '@/hooks/useFaceLandmarker';
 import { usePoseLandmarker } from '@/hooks/usePoseLandmarker';
-import ScienceTab from './ScienceTab';
-
-function SmileyLogo() {
-  return (
-    <svg width="34" height="34" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="logo-g" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#2563eb" />
-          <stop offset="100%" stopColor="#38bdf8" />
-        </linearGradient>
-      </defs>
-      <circle cx="20" cy="20" r="17.5" stroke="url(#logo-g)" strokeWidth="2.5" />
-      <circle cx="13.5" cy="15.5" r="2.5" fill="url(#logo-g)" />
-      <circle cx="26.5" cy="15.5" r="2.5" fill="url(#logo-g)" />
-      <path d="M 11.5 23.5 Q 20 31.5 28.5 23.5" stroke="url(#logo-g)" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-    </svg>
-  );
-}
 
 function drawSmileSkeleton(
   ctx: CanvasRenderingContext2D,
@@ -269,7 +251,6 @@ export default function SmileQuota() {
   const sessionModeRef     = useRef<SessionMode>('1x10');
 
   const scrollRef            = useRef<HTMLDivElement>(null);
-  const [activeTab,          setActiveTab]           = useState<'today'|'science'>('today');
   const [showScrollHint,     setShowScrollHint]     = useState(true);
   const [showReminderBanner, setShowReminderBanner] = useState(false);
   const [settings,           setSettings]           = useState<SmileSettings>(DEFAULT_SETTINGS);
@@ -484,32 +465,16 @@ export default function SmileQuota() {
       </AnimatePresence>
 
       <div className="page-scroll h-full" ref={scrollRef}>
-        <div className="min-h-full pt-safe pb-24 flex flex-col" style={{ paddingLeft: activeTab === 'today' ? undefined : 0, paddingRight: activeTab === 'today' ? undefined : 0 }}>
-        {activeTab === 'science' && (
-          <>
-            <div className="flex items-center gap-2.5 px-5 pt-4 mb-2">
-              <SmileyLogo />
-              <div>
-                <h1 className="text-xl font-bold tracking-tight text-white leading-tight">Smiley</h1>
-                <p className="text-xs" style={{ color: '#5b8dd9' }}>Daily smile quota</p>
-              </div>
-            </div>
-            <ScienceTab accent={accent} />
-          </>
-        )}
-        {activeTab === 'today' && <div className="flex flex-col flex-1 px-5 pb-8">
+        <div className="min-h-full px-5 pt-safe pb-8 flex flex-col">
 
           {/* ── Header ── */}
           <motion.div
             initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}
             className="flex items-center justify-between pt-4 mb-7"
           >
-            <div className="flex items-center gap-2.5">
-              <SmileyLogo />
-              <div>
-                <h1 className="text-xl font-bold tracking-tight text-white leading-tight">Smiley</h1>
-                <p className="text-xs" style={{ color: '#5b8dd9' }}>Daily smile quota</p>
-              </div>
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight text-white leading-tight">Smiley</h1>
+              <p className="text-xs mt-0.5" style={{ color: '#5b8dd9' }}>Daily smile quota</p>
             </div>
             <button
               onClick={() => setShowSettings(v => !v)}
@@ -871,35 +836,6 @@ export default function SmileQuota() {
           </AnimatePresence>
 
           <div className="flex-1" />
-        </div>}
-        </div>
-      </div>
-
-      {/* ── Bottom tab bar ── */}
-      <div className="absolute bottom-0 left-0 right-0 pb-safe z-50"
-        style={{ background: 'rgba(5,10,24,0.88)', backdropFilter: 'blur(24px)', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-        <div className="flex">
-          {([
-            { id: 'today',   icon: '😊', label: 'Today' },
-            { id: 'science', icon: '🔬', label: 'Science' },
-          ] as const).map(tab => {
-            const active = activeTab === tab.id;
-            return (
-              <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-                className="flex-1 flex flex-col items-center gap-1 py-3 btn-press"
-              >
-                <span className="text-lg leading-none">{tab.icon}</span>
-                <span className="text-[11px] font-semibold"
-                  style={{ color: active ? '#60a5fa' : '#334155', transition: 'color 0.2s' }}>
-                  {tab.label}
-                </span>
-                {active && (
-                  <motion.div layoutId="tab-indicator" className="absolute bottom-0 w-10 h-0.5 rounded-full"
-                    style={{ background: '#3b82f6' }} />
-                )}
-              </button>
-            );
-          })}
         </div>
       </div>
 
