@@ -482,7 +482,7 @@ export default function SmileQuota() {
             <Bell size={16} style={{ color: '#60a5fa', flexShrink: 0 }} />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-white">Smile reminder</p>
-              <p className="text-xs text-slate-400 mt-0.5">You haven&apos;t hit your quota yet today</p>
+              <p className="text-xs mt-0.5" style={{ color: '#7aa8d4' }}>You haven&apos;t hit your quota yet today</p>
             </div>
             <button onClick={() => setShowReminderBanner(false)} className="p-1 btn-press">
               <X size={14} className="text-slate-500" />
@@ -594,11 +594,11 @@ export default function SmileQuota() {
             transition={{ duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
             className="flex flex-col items-center mb-6"
           >
-            <div className="relative" style={{ width: 230, height: 230 }}>
-              {/* Subtle radial glow */}
+            <div className="relative" style={{ width: 260, height: 260 }}>
+              {/* Radial glow behind ring */}
               <div className="absolute inset-0 rounded-full pointer-events-none"
                 style={{
-                  background: `radial-gradient(circle at center, ${accent}28 0%, ${accent}08 50%, transparent 70%)`,
+                  background: `radial-gradient(circle at center, ${accent}50 0%, ${accent}22 45%, transparent 70%)`,
                   transition: 'background 0.5s ease',
                 }} />
 
@@ -624,7 +624,7 @@ export default function SmileQuota() {
                     {displayCount}
                   </motion.span>
                 </AnimatePresence>
-                <p className="text-xs mt-1 font-medium" style={{ color: '#334155' }}>of {displayQuota}</p>
+                <p className="text-xs mt-1 font-medium" style={{ color: '#4a6b9e' }}>of {displayQuota}</p>
 
                 {/* Smiling pill */}
                 <AnimatePresence>
@@ -634,7 +634,7 @@ export default function SmileQuota() {
                       exit={{ opacity: 0, scale: 0.75, y: 4 }}
                       transition={{ type: 'spring', damping: 20 }}
                       className="flex items-center gap-1.5 px-3 py-1 rounded-full mt-2"
-                      style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(52,211,153,0.25)' }}
+                      style={{ background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(52,211,153,0.4)', boxShadow: '0 0 12px rgba(52,211,153,0.15)' }}
                     >
                       <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: '#34d399' }} />
                       <span className="text-[10px] font-semibold tracking-wider uppercase" style={{ color: '#34d399' }}>
@@ -668,7 +668,7 @@ export default function SmileQuota() {
                     { label: 'S2', c: Math.max(0, smileCount - 5), color: '#38bdf8' },
                   ].map(({ label, c, color }) => (
                     <div key={label} className="flex items-center gap-2.5">
-                      <span className="text-[10px] font-medium w-4 text-right" style={{ color: '#334155' }}>{label}</span>
+                      <span className="text-[10px] font-medium w-4 text-right" style={{ color: '#4a6b9e' }}>{label}</span>
                       <div className="flex gap-1.5">
                         {Array.from({ length: 5 }).map((_, i) => (
                           <motion.div key={i} initial={false}
@@ -732,9 +732,9 @@ export default function SmileQuota() {
               ...(cameraState === 'granted' || cameraState === 'requesting'
                 ? { aspectRatio: '4/3' }
                 : { minHeight: 200 }),
-              background: 'rgba(255,255,255,0.035)',
-              border: `1px solid ${isSmiling && cameraState === 'granted' ? 'rgba(52,211,153,0.4)' : 'rgba(255,255,255,0.1)'}`,
-              boxShadow: isSmiling && cameraState === 'granted' ? '0 0 24px rgba(52,211,153,0.08)' : 'none',
+              background: 'linear-gradient(160deg, rgba(26,53,112,0.35) 0%, rgba(15,34,72,0.2) 100%)',
+              border: `1px solid ${isSmiling && cameraState === 'granted' ? 'rgba(52,211,153,0.45)' : 'rgba(255,255,255,0.12)'}`,
+              boxShadow: isSmiling && cameraState === 'granted' ? '0 0 32px rgba(52,211,153,0.14)' : '0 4px 24px rgba(0,0,0,0.3)',
               transition: 'border-color 0.3s',
             }}
           >
@@ -751,7 +751,7 @@ export default function SmileQuota() {
                 </div>
                 <div className="text-center">
                   <p className="text-sm font-semibold text-white mb-1">Enable camera</p>
-                  <p className="text-xs" style={{ color: '#475569' }}>All processing stays on your device</p>
+                  <p className="text-xs" style={{ color: '#5b7fa0' }}>All processing stays on your device</p>
                 </div>
                 <button
                   onClick={() => { if (autoStart) localStorage.setItem('smiley_camera_autostart', 'true'); requestCamera(); }}
@@ -763,7 +763,7 @@ export default function SmileQuota() {
                 <label className="flex items-center gap-2 cursor-pointer select-none">
                   <input type="checkbox" checked={autoStart} onChange={e => setAutoStart(e.target.checked)}
                     className="w-3.5 h-3.5 accent-violet-600" />
-                  <span className="text-xs" style={{ color: '#475569' }}>Auto-start next time</span>
+                  <span className="text-xs" style={{ color: '#5b7fa0' }}>Auto-start next time</span>
                 </label>
               </div>
             )}
@@ -772,7 +772,7 @@ export default function SmileQuota() {
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
                 <div className="w-6 h-6 rounded-full border-2 animate-spin"
                   style={{ borderColor: '#60a5fa', borderTopColor: 'transparent' }} />
-                <p className="text-xs" style={{ color: '#64748b' }}>Starting camera…</p>
+                <p className="text-xs" style={{ color: '#5b7fa0' }}>Starting camera…</p>
               </div>
             )}
 
@@ -785,20 +785,20 @@ export default function SmileQuota() {
 
             {cameraState === 'granted' && !isReady && (
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-3"
-                style={{ background: 'rgba(9,9,15,0.7)', backdropFilter: 'blur(8px)' }}>
+                style={{ background: 'rgba(4,12,30,0.82)', backdropFilter: 'blur(8px)' }}>
                 <div className="w-6 h-6 rounded-full border-2 animate-spin"
                   style={{ borderColor: '#60a5fa', borderTopColor: 'transparent' }} />
-                <p className="text-xs" style={{ color: '#64748b' }}>Loading AI model…</p>
+                <p className="text-xs" style={{ color: '#5b7fa0' }}>Loading AI model…</p>
               </div>
             )}
 
             {/* In-camera mini progress overlay */}
             {cameraState === 'granted' && isReady && (
               <div className="absolute bottom-0 left-0 right-0 px-4 pb-3 pt-8 flex flex-col items-center gap-1.5 pointer-events-none"
-                style={{ background: 'linear-gradient(to top, rgba(9,9,15,0.85) 0%, transparent 100%)' }}>
+                style={{ background: 'linear-gradient(to top, rgba(4,12,30,0.92) 0%, transparent 100%)' }}>
                 <div className="flex items-baseline gap-1">
                   <span className="text-lg font-bold tabular-nums" style={{ color: accent }}>{displayCount}</span>
-                  <span className="text-[11px]" style={{ color: '#334155' }}>/ {displayQuota}</span>
+                  <span className="text-[11px]" style={{ color: '#4a6b9e' }}>/ {displayQuota}</span>
                 </div>
                 <div className="flex gap-1.5">
                   {Array.from({ length: displayQuota }).map((_, i) => (
@@ -842,15 +842,15 @@ export default function SmileQuota() {
           <motion.div
             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }}
             className="rounded-2xl p-4 mb-4"
-            style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
+            style={{ background: 'rgba(255,255,255,0.045)', border: '1px solid rgba(255,255,255,0.09)' }}
           >
             <div className="flex items-center gap-2 mb-2.5">
               <span className="text-sm">🧠</span>
-              <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: '#334155' }}>
+              <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: '#4a6b9e' }}>
                 Did you know
               </span>
             </div>
-            <p className="text-[13px] leading-relaxed" style={{ color: '#94a3b8' }}>
+            <p className="text-[13px] leading-relaxed" style={{ color: '#7aa8d4' }}>
               <span className="text-white font-semibold">Even a forced smile lifts your mood.</span>{' '}
               Your face muscles signal your brain to release{' '}
               <span style={{ color: accent }} className="font-medium">serotonin</span> and{' '}
@@ -865,7 +865,7 @@ export default function SmileQuota() {
                 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
                 transition={{ delay: 0.06 }}
                 className="rounded-2xl p-4 mb-4"
-                style={{ background: 'rgba(245,158,11,0.05)', border: '1px solid rgba(245,158,11,0.16)' }}
+                style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.24)' }}
               >
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-sm">⚡</span>
@@ -873,7 +873,7 @@ export default function SmileQuota() {
                     Super Smile Day
                   </span>
                 </div>
-                <p className="text-[13px] leading-relaxed mb-4" style={{ color: '#94a3b8' }}>
+                <p className="text-[13px] leading-relaxed mb-4" style={{ color: '#7aa8d4' }}>
                   Smile <span className="text-white font-semibold">10 more times</span> to unlock a Super Smile Day — double the dopamine, double the glory.
                 </p>
                 <button

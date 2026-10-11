@@ -31,10 +31,10 @@ html, body {
 body {
   background:
     linear-gradient(160deg,
-      #0d2750 0%,
-      #071a3a 25%,
-      #050f28 60%,
-      #030a1a 100%
+      #1a3570 0%,
+      #0f2248 22%,
+      #080f2e 55%,
+      #040c1e 100%
     );
   color: var(--text);
   font-family: 'Inter', system-ui, sans-serif;
