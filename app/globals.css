@@ -5,18 +5,16 @@
 @tailwind utilities;
 
 :root {
-  --bg: #080810;
-  --surface: rgba(255,255,255,0.05);
-  --border: rgba(255,255,255,0.1);
+  --bg: #0c0c14;
+  --surface: rgba(255,255,255,0.04);
+  --border: rgba(255,255,255,0.08);
   --text: #f1f5f9;
   --text-2: #94a3b8;
   --text-3: #4b5563;
-  --indigo: #6366f1;
-  --violet: #a855f7;
-  --violet-light: #c084fc;
-  --cyan: #22d3ee;
+  --violet: #7c3aed;
+  --violet-light: #a78bfa;
+  --green: #34d399;
   --amber: #fbbf24;
-  --orange: #f97316;
 }
 
 * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
@@ -29,10 +27,7 @@ html, body {
 }
 
 body {
-  background:
-    radial-gradient(ellipse 80% 55% at 50% 0%, rgba(99,102,241,0.22) 0%, rgba(99,102,241,0.06) 45%, transparent 70%),
-    radial-gradient(ellipse 40% 30% at 80% 90%, rgba(168,85,247,0.08) 0%, transparent 60%),
-    #080810;
+  background: var(--bg);
   color: var(--text);
   font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -47,25 +42,12 @@ body {
   overscroll-behavior: contain;
 }
 
-.btn-press { transition: transform 0.1s ease, opacity 0.1s ease; }
-.btn-press:active { transform: scale(0.95); opacity: 0.8; }
+.btn-press { transition: transform 0.12s ease, opacity 0.12s ease; }
+.btn-press:active { transform: scale(0.96); opacity: 0.85; }
 
 .camera-feed { transform: scaleX(-1); }
 .pb-safe { padding-bottom: env(safe-area-inset-bottom, 16px); }
 .pt-safe { padding-top: env(safe-area-inset-top, 16px); }
-
-.glass-card {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.1);
-  backdrop-filter: blur(12px);
-}
-
-.glass-card-accent {
-  background:
-    linear-gradient(rgba(255,255,255,0.04), rgba(255,255,255,0.04)) padding-box,
-    linear-gradient(135deg, rgba(99,102,241,0.55) 0%, rgba(168,85,247,0.2) 50%, rgba(255,255,255,0.07) 100%) border-box;
-  border: 1px solid transparent;
-}
 
 @keyframes skeleton-shimmer {
   0% { background-position: -200px 0; }
@@ -76,13 +58,4 @@ body {
   background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.07) 50%, rgba(255,255,255,0.03) 75%);
   background-size: 400px 100%;
   animation: skeleton-shimmer 1.4s ease infinite;
-}
-
-@keyframes ring-pulse {
-  0%, 100% { opacity: 0.25; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(1.04); }
-}
-
-.ring-pulse {
-  animation: ring-pulse 2.2s ease-in-out infinite;
 }
