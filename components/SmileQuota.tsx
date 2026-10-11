@@ -14,15 +14,14 @@ function drawSmileSkeleton(
 ) {
   ctx.clearRect(0, 0, w, h);
   if (!lm || lm.length < 17) return;
-  const color = smiling ? '#00ff88' : 'rgba(0,200,255,0.45)';
-  const glow  = smiling ? 22 : 6;
+  const color = smiling ? '#34d399' : 'rgba(148,163,184,0.35)';
   ctx.save();
   ctx.translate(w, 0);
   ctx.scale(-1, 1);
-  ctx.shadowBlur  = glow;
+  ctx.shadowBlur  = smiling ? 10 : 4;
   ctx.shadowColor = color;
   ctx.strokeStyle = color;
-  ctx.lineWidth   = smiling ? 3 : 1.5;
+  ctx.lineWidth   = smiling ? 2.5 : 1.5;
   ctx.lineCap     = 'round';
   const connections: [number, number][] = [
     [0,1],[1,2],[2,3],[3,7],[0,4],[4,5],[5,6],[6,8],[9,10],[11,12],[11,13],[13,15],[12,14],[14,16],
@@ -37,15 +36,51 @@ function drawSmileSkeleton(
     ctx.stroke();
   }
   ctx.fillStyle = color;
-  ctx.shadowBlur = glow * 1.5;
   for (const i of [0,11,12,13,14,15,16]) {
     const p = lm[i];
     if (!p || (p.visibility ?? 1) < 0.3) continue;
     ctx.beginPath();
-    ctx.arc(p.x * w, p.y * h, smiling ? 4 : 2.5, 0, Math.PI * 2);
+    ctx.arc(p.x * w, p.y * h, smiling ? 3.5 : 2, 0, Math.PI * 2);
     ctx.fill();
   }
   ctx.restore();
+}
+
+function ProgressRing({ count, quota, isComplete, superActive }: {
+  count: number; quota: number; isComplete: boolean; superActive: boolean;
+}) {
+  const r = 84;
+  const circ = 2 * Math.PI * r;
+  const offset = circ * (1 - Math.min(count / quota, 1));
+  const gradId = superActive ? 'rg-super' : isComplete ? 'rg-done' : 'rg-base';
+
+  return (
+    <svg viewBox="0 0 200 200" className="absolute inset-0 w-full h-full" style={{ transform: 'rotate(-90deg)' }}>
+      <defs>
+        <linearGradient id="rg-base" x1="10" y1="100" x2="190" y2="100" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#6366f1" />
+          <stop offset="100%" stopColor="#a78bfa" />
+        </linearGradient>
+        <linearGradient id="rg-done" x1="10" y1="100" x2="190" y2="100" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#a78bfa" />
+          <stop offset="100%" stopColor="#f472b6" />
+        </linearGradient>
+        <linearGradient id="rg-super" x1="10" y1="100" x2="190" y2="100" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#fbbf24" />
+          <stop offset="100%" stopColor="#f97316" />
+        </linearGradient>
+      </defs>
+      <circle cx="100" cy="100" r={r} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="12" />
+      {count > 0 && (
+        <circle cx="100" cy="100" r={r} fill="none"
+          stroke={`url(#${gradId})`}
+          strokeWidth="12" strokeLinecap="round"
+          strokeDasharray={circ} strokeDashoffset={offset}
+          style={{ transition: 'stroke-dashoffset 0.55s cubic-bezier(0.34,1.56,0.64,1), stroke 0.4s ease' }}
+        />
+      )}
+    </svg>
+  );
 }
 
 const STORAGE_KEY       = 'smiley_smile_quota';
@@ -134,7 +169,7 @@ function scheduleNotification(settings: SmileSettings, count: number) {
 }
 
 function fireFireworks() {
-  const c = ['#00f0ff','#ff00cc','#7b2fff','#ffaa00','#ffffff'];
+  const c = ['#818cf8','#c084fc','#f472b6','#fbbf24','#ffffff'];
   const s = (a: number, x: number) => confetti({ particleCount: 75, angle: a, spread: 60, origin: { x, y: 0.75 }, colors: c });
   s(60, 0); s(120, 1);
   setTimeout(() => confetti({ particleCount: 140, spread: 90, origin: { x: 0.5, y: 0.5 }, colors: c }), 300);
@@ -143,14 +178,14 @@ function fireFireworks() {
 }
 
 function fireMiniworks() {
-  const c = ['#00f0ff','#7b2fff','#ffffff'];
+  const c = ['#818cf8','#c084fc','#ffffff'];
   confetti({ particleCount: 60, spread: 70, origin: { x: 0.5, y: 0.6 }, colors: c });
   setTimeout(() => confetti({ particleCount: 40, spread: 50, origin: { x: 0.3, y: 0.7 }, colors: c }), 300);
   setTimeout(() => confetti({ particleCount: 40, spread: 50, origin: { x: 0.7, y: 0.7 }, colors: c }), 500);
 }
 
 function fireSuperFireworks() {
-  const c = ['#ffaa00','#ff6600','#ffdd00','#ff00cc','#ffffff'];
+  const c = ['#fbbf24','#f97316','#fde68a','#f472b6','#ffffff'];
   const s = (a: number, x: number) => confetti({ particleCount: 100, angle: a, spread: 70, origin: { x, y: 0.75 }, colors: c });
   s(60, 0); s(120, 1);
   setTimeout(() => confetti({ particleCount: 200, spread: 120, origin: { x: 0.5, y: 0.5 }, colors: c }), 200);
@@ -161,33 +196,33 @@ function fireSuperFireworks() {
 
 function statusMsg(count: number, mode: SessionMode, superActive: boolean, superCount: number): string {
   if (superActive) {
-    if (superCount === 0) return 'Bonus round! Keep those smiles coming!';
-    if (superCount < 5)  return 'Super Smile mode activated 🌟';
-    if (superCount < 9)  return "Almost there — you're unstoppable!";
-    if (superCount === 9) return 'One more for the ultimate day!';
-    return 'SUPER SMILE DAY COMPLETE! 🏆';
+    if (superCount === 0) return 'Bonus round — keep going';
+    if (superCount < 5)  return 'Super Smile mode activated';
+    if (superCount < 9)  return "Almost there — unstoppable";
+    if (superCount === 9) return 'One more for the ultimate day';
+    return 'Super Smile Day complete';
   }
   if (mode === '2x5') {
     if (count < 5) {
-      if (count === 0) return 'Smile at the camera to begin!';
-      if (count < 3)   return 'Great start — keep going!';
-      return 'Almost done with session 1!';
+      if (count === 0) return 'Smile at the camera to begin';
+      if (count < 3)   return 'Great start — keep going';
+      return 'Almost done with session 1';
     }
-    if (count === 5) return 'Session 1 done! Take a breather 🌟';
+    if (count === 5) return 'Session 1 done — take a breather';
     const s2 = count - 5;
-    if (s2 < 3) return 'Session 2 in motion 🔥';
-    if (s2 < 5) return 'Almost done — one big push!';
+    if (s2 < 3) return 'Session 2 in motion';
+    if (s2 < 5) return 'Almost done — one big push';
   }
-  if (count === 0) return 'Smile at the camera to begin!';
-  if (count < 3)   return 'Great start — keep going!';
-  if (count < 6)   return "You're on a roll 🔥";
-  if (count < 9)   return 'Almost there — smile big!';
-  if (count === 9) return "One more! You've got this!";
-  return "Quota complete! You're glowing ✨";
+  if (count === 0) return 'Smile at the camera to begin';
+  if (count < 3)   return 'Great start — keep going';
+  if (count < 6)   return "You're on a roll";
+  if (count < 9)   return 'Almost there — smile big';
+  if (count === 9) return "One more — you've got this";
+  return "Quota complete";
 }
 
 export default function SmileQuota() {
-  const { isReady, detectSmile }          = useFaceLandmarker();
+  const { isReady, detectSmile }                   = useFaceLandmarker();
   const { detect: detectPose, isReady: poseReady } = usePoseLandmarker();
 
   const videoRef           = useRef<HTMLVideoElement>(null);
@@ -305,14 +340,14 @@ export default function SmileQuota() {
       rafRef.current = requestAnimationFrame(runLoop);
       return;
     }
-    const now     = performance.now();
-    const score   = detectSmile(video, now);
+    const now   = performance.now();
+    const score = detectSmile(video, now);
     const smiling = score >= SMILE_THRESHOLD;
 
     const canvas = canvasRef.current;
     if (canvas && poseReady) {
       if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
-        canvas.width = video.videoWidth || 640;
+        canvas.width  = video.videoWidth  || 640;
         canvas.height = video.videoHeight || 480;
       }
       const ctx = canvas.getContext('2d');
@@ -380,81 +415,90 @@ export default function SmileQuota() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const isBaseComplete  = smileCount  >= QUOTA;
-  const isSuperComplete = superCount  >= SUPER_QUOTA;
+  const isBaseComplete  = smileCount >= QUOTA;
+  const isSuperComplete = superCount >= SUPER_QUOTA;
+  const displayCount    = superActive ? superCount : smileCount;
+  const displayQuota    = superActive ? SUPER_QUOTA : QUOTA;
+
+  const accentColor  = superActive ? '#fbbf24' : isBaseComplete ? '#c084fc' : '#818cf8';
+  const accentColor2 = superActive ? '#f97316' : isBaseComplete ? '#f472b6' : '#a78bfa';
 
   return (
     <div className="relative" style={{ height: '100dvh' }}>
 
+      {/* Reminder banner */}
       <AnimatePresence>
         {showReminderBanner && (
           <motion.div
-            initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}
+            initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}
             className="absolute top-16 left-4 right-4 z-[60] rounded-2xl px-4 py-3 flex items-center gap-3"
-            style={{ background: 'rgba(0,240,255,0.12)', border: '1px solid rgba(0,240,255,0.4)', backdropFilter: 'blur(16px)' }}
+            style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(20px)' }}
           >
-            <Bell size={18} style={{ color: '#00f0ff', flexShrink: 0 }} />
+            <Bell size={16} style={{ color: '#818cf8', flexShrink: 0 }} />
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold text-white leading-tight">Smile reminder!</p>
-              <p className="text-xs text-gray-400 mt-0.5">You haven&apos;t hit your 10-smile quota yet today 😊</p>
+              <p className="text-sm font-semibold text-white">Smile reminder</p>
+              <p className="text-xs text-gray-400 mt-0.5">You haven&apos;t hit your quota yet today</p>
             </div>
-            <button onClick={() => setShowReminderBanner(false)} className="flex-shrink-0 p-1">
-              <X size={15} className="text-gray-400" />
+            <button onClick={() => setShowReminderBanner(false)} className="p-1 btn-press">
+              <X size={14} className="text-gray-500" />
             </button>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <div className="page-scroll cyber-bg scanline h-full" ref={scrollRef}>
+      <div className="page-scroll h-full" ref={scrollRef}>
         <div className="min-h-full px-5 pt-safe pb-8 flex flex-col">
 
           {/* Header */}
           <motion.div
-            initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}
-            className="flex items-center gap-3 pt-4 mb-4"
+            initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}
+            className="flex items-center justify-between pt-4 mb-6"
           >
-            <div className="flex-1">
-              <h1 className="text-xl font-black tracking-tight" style={{
-                background: 'linear-gradient(90deg,#00d4ff 0%,#b066ff 55%,#ff00cc 100%)',
-                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
-              }}>Smiley</h1>
-              <p className="text-[11px] text-gray-500">Daily happiness workout</p>
+            <div>
+              <h1 className="text-[22px] font-bold tracking-tight text-white">Smiley</h1>
+              <p className="text-xs text-gray-500 mt-0.5">Daily happiness workout</p>
             </div>
             <button
-              onClick={() => setShowSettings((v) => !v)}
-              className="w-10 h-10 rounded-xl flex items-center justify-center btn-press"
+              onClick={() => setShowSettings(v => !v)}
+              className="w-9 h-9 rounded-xl flex items-center justify-center btn-press"
               style={{
-                background: showSettings ? 'rgba(0,240,255,0.12)' : 'rgba(18,18,40,0.8)',
-                border: showSettings ? '1px solid rgba(0,240,255,0.3)' : '1px solid rgba(255,255,255,0.07)',
+                background: showSettings ? 'rgba(129,140,248,0.12)' : 'rgba(255,255,255,0.06)',
+                border: `1px solid ${showSettings ? 'rgba(129,140,248,0.35)' : 'rgba(255,255,255,0.1)'}`,
               }}
             >
-              <Settings size={17} style={{ color: showSettings ? '#00f0ff' : '#6b7280' }} />
+              <Settings size={15} style={{ color: showSettings ? '#a78bfa' : '#6b7280' }} />
             </button>
           </motion.div>
 
-          {/* Settings Panel */}
+          {/* Settings panel */}
           <AnimatePresence>
             {showSettings && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.25 }}
-                className="overflow-hidden mb-4"
+                exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.22 }}
+                className="overflow-hidden mb-5"
               >
                 <div className="rounded-2xl p-4 flex flex-col gap-4"
-                  style={{ background: 'rgba(10,10,26,0.95)', border: '1px solid rgba(0,240,255,0.12)' }}>
+                  style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+
+                  {/* Notifications row */}
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2.5">
                       {settings.notificationsEnabled
-                        ? <Bell size={15} style={{ color: '#00f0ff' }} />
-                        : <BellOff size={15} className="text-gray-500" />}
-                      <span className="text-sm font-semibold text-white">Reminders</span>
+                        ? <Bell size={14} style={{ color: '#818cf8' }} />
+                        : <BellOff size={14} className="text-gray-500" />}
+                      <span className="text-sm font-medium text-white">Reminders</span>
                     </div>
                     <button
                       onClick={toggleNotifications}
-                      className="relative w-11 h-6 rounded-full transition-colors duration-200 btn-press"
-                      style={{ background: settings.notificationsEnabled ? 'linear-gradient(135deg,#00f0ff,#7b2fff)' : 'rgba(255,255,255,0.1)' }}
+                      className="relative rounded-full btn-press flex-shrink-0"
+                      style={{
+                        width: 44, height: 24,
+                        background: settings.notificationsEnabled ? '#7c3aed' : 'rgba(255,255,255,0.1)',
+                        transition: 'background 0.2s',
+                      }}
                     >
-                      <span className="absolute top-0.5 w-5 h-5 rounded-full bg-white transition-all duration-200"
+                      <span className="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-all duration-200"
                         style={{ left: settings.notificationsEnabled ? 'calc(100% - 1.375rem)' : '0.125rem' }} />
                     </button>
                   </div>
@@ -463,11 +507,11 @@ export default function SmileQuota() {
                     {settings.notificationsEnabled && (
                       <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-                        <div className="flex items-center justify-between pl-5">
-                          <span className="text-xs text-gray-400">Remind me at</span>
+                        <div className="flex items-center justify-between pl-6">
+                          <span className="text-xs text-gray-500">Remind me at</span>
                           <input type="time" value={settings.reminderTime}
-                            onChange={(e) => updateSettings({ reminderTime: e.target.value })}
-                            className="bg-transparent text-xs font-bold text-white border-none outline-none"
+                            onChange={e => updateSettings({ reminderTime: e.target.value })}
+                            className="bg-transparent text-xs font-semibold text-white border-none outline-none"
                             style={{ colorScheme: 'dark' }} />
                         </div>
                       </motion.div>
@@ -476,18 +520,19 @@ export default function SmileQuota() {
 
                   <div style={{ height: 1, background: 'rgba(255,255,255,0.06)' }} />
 
+                  {/* Session style */}
                   <div>
-                    <span className="text-sm font-semibold text-white block mb-2.5">Session style</span>
+                    <span className="text-[10px] font-medium text-gray-500 uppercase tracking-widest block mb-2.5">Session style</span>
                     <div className="flex gap-2">
                       {(['1x10', '2x5'] as SessionMode[]).map((mode) => (
                         <button key={mode} onClick={() => updateSettings({ sessionMode: mode })}
-                          className="flex-1 py-2 rounded-xl text-xs font-bold btn-press"
+                          className="flex-1 py-2 rounded-xl text-xs font-medium btn-press"
                           style={{
-                            background: settings.sessionMode === mode ? 'linear-gradient(135deg,rgba(0,240,255,0.15),rgba(123,47,255,0.15))' : 'rgba(255,255,255,0.05)',
-                            border: settings.sessionMode === mode ? '1px solid rgba(0,240,255,0.4)' : '1px solid rgba(255,255,255,0.07)',
-                            color: settings.sessionMode === mode ? '#00f0ff' : '#6b7280',
+                            background: settings.sessionMode === mode ? 'rgba(124,58,237,0.15)' : 'rgba(255,255,255,0.04)',
+                            border: settings.sessionMode === mode ? '1px solid rgba(129,140,248,0.4)' : '1px solid rgba(255,255,255,0.08)',
+                            color: settings.sessionMode === mode ? '#a78bfa' : '#6b7280',
                           }}>
-                          {mode === '1x10' ? '1 session · 10 smiles' : '2 sessions · 5 each'}
+                          {mode === '1x10' ? '1 session · 10' : '2 sessions · 5 each'}
                         </button>
                       ))}
                     </div>
@@ -497,109 +542,127 @@ export default function SmileQuota() {
             )}
           </AnimatePresence>
 
-          {/* Science card */}
+          {/* ── Hero: Progress ring ── */}
           <motion.div
-            initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.28 }}
-            className="rounded-3xl p-5 mb-6"
-            style={{ background: 'linear-gradient(135deg,rgba(255,0,204,0.07),rgba(123,47,255,0.1))', border: '1px solid rgba(255,0,204,0.14)' }}
-          >
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-base">🧠</span>
-              <span className="text-[11px] font-black tracking-widest uppercase" style={{ color: '#ff00cc' }}>Did You Know?</span>
-            </div>
-            <p className="text-sm text-gray-300 leading-relaxed">
-              <strong className="text-white">Even a fake smile makes you happier.</strong>{' '}
-              When you smile — real or forced — your face muscles signal your brain to release{' '}
-              <span style={{ color: '#00f0ff', fontWeight: 700 }}>serotonin</span> and{' '}
-              <span style={{ color: '#ff00cc', fontWeight: 700 }}>dopamine</span>, the exact same chemicals as genuine joy.{' '}
-              <strong className="text-white">Fake it till you feel it. Science says so.</strong>
-            </p>
-          </motion.div>
-
-          {/* Counter */}
-          <motion.div
-            initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }}
+            initial={{ opacity: 0, scale: 0.88 }} animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
             className="flex flex-col items-center mb-6"
           >
-            <AnimatePresence mode="wait">
-              <motion.span
-                key={superActive ? `s${superCount}` : smileCount}
-                initial={{ scale: 1.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.6, opacity: 0 }}
-                transition={{ type: 'spring', damping: 14, stiffness: 260 }}
-                className="text-9xl font-black leading-none tabular-nums"
+            {/* Ring + counter */}
+            <div className="relative" style={{ width: 224, height: 224 }}>
+              {/* Subtle glow behind ring */}
+              <div className="absolute inset-8 rounded-full pointer-events-none"
                 style={{
-                  color: superActive ? '#ffaa00' : isBaseComplete ? '#ff00cc' : '#00f0ff',
-                  textShadow: superActive ? '0 0 40px #ffaa0099,0 0 80px #ffaa0033' : isBaseComplete ? '0 0 40px #ff00cc99,0 0 80px #ff00cc33' : '0 0 40px #00f0ff99,0 0 80px #00f0ff33',
-                }}
-              >
-                {superActive ? superCount : smileCount}
-              </motion.span>
-            </AnimatePresence>
+                  background: `radial-gradient(circle, ${accentColor}18 0%, transparent 70%)`,
+                  transition: 'background 0.4s ease',
+                }} />
+              <ProgressRing count={displayCount} quota={displayQuota} isComplete={isBaseComplete} superActive={superActive} />
 
-            <div className="flex items-center gap-1.5 mt-1 mb-5">
-              <span className="text-sm text-gray-500">of</span>
-              <span className="text-sm font-bold text-white">{superActive ? SUPER_QUOTA : QUOTA}</span>
-              <span className="text-sm text-gray-500">{superActive ? 'bonus smiles' : 'smiles today'}</span>
+              {/* Counter inside ring */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-0.5">
+                <AnimatePresence mode="wait">
+                  <motion.span
+                    key={superActive ? `s${superCount}` : smileCount}
+                    initial={{ scale: 1.35, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.65, opacity: 0 }}
+                    transition={{ type: 'spring', damping: 18, stiffness: 300 }}
+                    className="font-bold tabular-nums leading-none"
+                    style={{
+                      fontSize: 68,
+                      color: accentColor,
+                      transition: 'color 0.4s ease',
+                    }}
+                  >
+                    {displayCount}
+                  </motion.span>
+                </AnimatePresence>
+                <p className="text-[12px] text-gray-500">of {displayQuota}</p>
+
+                {/* Smiling indicator inside ring */}
+                <AnimatePresence>
+                  {isSmiling && cameraState === 'granted' && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.7, y: 4 }} animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.7, y: 4 }}
+                      transition={{ type: 'spring', damping: 20 }}
+                      className="flex items-center gap-1.5 px-2.5 py-1 rounded-full mt-1"
+                      style={{ background: 'rgba(52,211,153,0.12)', border: '1px solid rgba(52,211,153,0.25)' }}
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      <span className="text-[10px] font-semibold tracking-wide uppercase" style={{ color: '#34d399' }}>Smiling</span>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
 
-            {!superActive && settings.sessionMode === '2x5' ? (
-              <div className="flex flex-col items-center gap-2">
-                {[
-                  { label: 'Session 1', count: Math.min(smileCount, 5), total: 5, color: '#00f0ff' },
-                  { label: 'Session 2', count: Math.max(0, smileCount - 5), total: 5, color: '#ff00cc' },
-                ].map(({ label, count: c, total, color }) => (
-                  <div key={label} className="flex items-center gap-3">
-                    <span className="text-[10px] text-gray-600 w-16 text-right">{label}</span>
-                    <div className="flex gap-2">
-                      {Array.from({ length: total }).map((_, i) => (
-                        <motion.div key={i} initial={false}
-                          animate={{ scale: i < c ? 1 : 0.7, opacity: i < c ? 1 : 0.22 }}
-                          transition={{ type: 'spring', damping: 12, stiffness: 320 }}
-                          className="w-4 h-4 rounded-full"
-                          style={{ background: i < c ? color : 'rgba(255,255,255,0.15)', boxShadow: i < c ? `0 0 10px ${color}99` : 'none' }} />
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="flex gap-2.5">
-                {Array.from({ length: superActive ? SUPER_QUOTA : QUOTA }).map((_, i) => {
-                  const filled = superActive ? superCount : smileCount;
-                  const color  = superActive ? '#ffaa00' : isBaseComplete ? '#ff00cc' : '#00f0ff';
-                  return (
-                    <motion.div key={i} initial={false}
-                      animate={{ scale: i < filled ? 1 : 0.7, opacity: i < filled ? 1 : 0.22 }}
-                      transition={{ type: 'spring', damping: 12, stiffness: 320 }}
-                      className="w-4 h-4 rounded-full"
-                      style={{ background: i < filled ? color : 'rgba(255,255,255,0.15)', boxShadow: i < filled ? `0 0 10px ${color}99` : 'none' }} />
-                  );
-                })}
-              </div>
-            )}
-
+            {/* Status */}
             <AnimatePresence mode="wait">
               <motion.p
-                key={`${superActive}-${superActive ? superCount : smileCount}`}
-                initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.25 }}
-                className="mt-4 text-sm font-semibold text-gray-400"
+                key={`${superActive}-${displayCount}`}
+                initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.2 }}
+                className="text-[13px] font-medium text-gray-400 mt-2 text-center"
               >
                 {statusMsg(smileCount, settings.sessionMode, superActive, superCount)}
               </motion.p>
             </AnimatePresence>
+
+            {/* Progress dots */}
+            <div className="mt-4">
+              {!superActive && settings.sessionMode === '2x5' ? (
+                <div className="flex flex-col items-center gap-2">
+                  {[
+                    { label: 'S1', c: Math.min(smileCount, 5), color: '#818cf8' },
+                    { label: 'S2', c: Math.max(0, smileCount - 5), color: '#c084fc' },
+                  ].map(({ label, c, color }) => (
+                    <div key={label} className="flex items-center gap-2.5">
+                      <span className="text-[10px] text-gray-600 font-medium w-4 text-right">{label}</span>
+                      <div className="flex gap-1.5">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <motion.div key={i} initial={false}
+                            animate={{ scale: i < c ? 1 : 0.6, opacity: i < c ? 1 : 0.18 }}
+                            transition={{ type: 'spring', damping: 14, stiffness: 320 }}
+                            style={{
+                              width: 7, height: 7, borderRadius: '50%',
+                              background: i < c ? color : 'rgba(255,255,255,0.2)',
+                              boxShadow: i < c ? `0 0 6px ${color}70` : 'none',
+                            }} />
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex gap-1.5">
+                  {Array.from({ length: displayQuota }).map((_, i) => (
+                    <motion.div key={i} initial={false}
+                      animate={{ scale: i < displayCount ? 1 : 0.6, opacity: i < displayCount ? 1 : 0.18 }}
+                      transition={{ type: 'spring', damping: 14, stiffness: 320 }}
+                      style={{
+                        width: 7, height: 7, borderRadius: '50%',
+                        background: i < displayCount ? accentColor : 'rgba(255,255,255,0.2)',
+                        boxShadow: i < displayCount ? `0 0 6px ${accentColor}70` : 'none',
+                      }} />
+                  ))}
+                </div>
+              )}
+            </div>
           </motion.div>
 
-          {/* Camera */}
+          {/* ── Camera ── */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1, duration: 0.4 }}
-            className="rounded-3xl overflow-hidden relative mb-6 mx-auto"
+            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12, duration: 0.4 }}
+            className="rounded-2xl overflow-hidden relative mb-4"
             style={{
-              ...(cameraState === 'granted' || cameraState === 'requesting' ? { aspectRatio: '4/3', width: '65%' } : { width: '92%', minHeight: 260 }),
-              background: 'rgba(10,10,26,0.95)',
-              border: isSmiling ? '2px solid #00f0ff' : '1px solid rgba(255,255,255,0.07)',
-              boxShadow: isSmiling ? '0 0 32px rgba(0,240,255,0.28)' : 'none',
-              transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
+              ...(cameraState === 'granted' || cameraState === 'requesting'
+                ? { aspectRatio: '4/3' }
+                : { minHeight: 200 }),
+              background: 'rgba(255,255,255,0.03)',
+              border: `1px solid ${isSmiling && cameraState === 'granted' ? 'rgba(52,211,153,0.3)' : 'rgba(255,255,255,0.08)'}`,
+              boxShadow: isSmiling && cameraState === 'granted' ? '0 0 20px rgba(52,211,153,0.08)' : 'none',
+              transition: 'border-color 0.3s, box-shadow 0.3s',
             }}
           >
             <video ref={videoRef} className="camera-feed w-full h-full object-cover" playsInline muted
@@ -609,140 +672,146 @@ export default function SmileQuota() {
 
             {cameraState === 'idle' && (
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-6">
-                <motion.div animate={{ scale: [1,1.06,1] }} transition={{ duration: 2.2, repeat: Infinity }}
-                  className="w-16 h-16 rounded-2xl flex items-center justify-center"
-                  style={{ background: 'rgba(0,240,255,0.1)', border: '1px solid rgba(0,240,255,0.2)' }}>
-                  <Camera size={28} style={{ color: '#00f0ff' }} />
-                </motion.div>
+                <div className="w-12 h-12 rounded-2xl flex items-center justify-center"
+                  style={{ background: 'rgba(129,140,248,0.1)', border: '1px solid rgba(129,140,248,0.18)' }}>
+                  <Camera size={22} style={{ color: '#818cf8' }} />
+                </div>
                 <div className="text-center">
-                  <p className="text-sm font-bold text-white mb-1">Enable camera to detect smiles</p>
-                  <p className="text-xs text-gray-500">All processing is on-device — nothing is uploaded</p>
+                  <p className="text-sm font-semibold text-white mb-1">Enable camera</p>
+                  <p className="text-xs text-gray-500">All processing stays on your device</p>
                 </div>
                 <button
                   onClick={() => { if (autoStart) localStorage.setItem('smiley_camera_autostart', 'true'); requestCamera(); }}
-                  className="px-6 py-3 rounded-2xl font-bold text-sm text-[#050510] btn-press"
-                  style={{ background: 'linear-gradient(135deg,#00f0ff,#7b2fff)', boxShadow: '0 0 20px rgba(0,240,255,0.35)' }}
+                  className="px-5 py-2.5 rounded-xl font-semibold text-sm text-white btn-press"
+                  style={{ background: '#7c3aed' }}
                 >
                   Allow Camera
                 </button>
-                <label className="flex items-center gap-2 cursor-pointer select-none mt-1">
+                <label className="flex items-center gap-2 cursor-pointer select-none">
                   <input type="checkbox" checked={autoStart} onChange={e => setAutoStart(e.target.checked)}
-                    className="w-3.5 h-3.5 accent-cyan-400" />
-                  <span className="text-xs text-gray-500">Always start automatically</span>
+                    className="w-3.5 h-3.5 accent-violet-500" />
+                  <span className="text-xs text-gray-500">Auto-start next time</span>
                 </label>
               </div>
             )}
 
             {cameraState === 'requesting' && (
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-                <div className="w-9 h-9 rounded-full border-2 animate-spin"
-                  style={{ borderColor: '#00f0ff', borderTopColor: 'transparent' }} />
+                <div className="w-7 h-7 rounded-full border-2 animate-spin"
+                  style={{ borderColor: '#818cf8', borderTopColor: 'transparent' }} />
                 <p className="text-xs text-gray-400">Starting camera…</p>
               </div>
             )}
 
             {cameraState === 'denied' && (
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-4">
-                <p className="text-sm font-bold text-red-400">Camera access denied</p>
-                <p className="text-xs text-gray-500 text-center">Allow camera access in your browser settings and reload</p>
+                <p className="text-sm font-semibold text-red-400">Camera access denied</p>
+                <p className="text-xs text-gray-500 text-center">Enable camera in your browser settings and reload</p>
               </div>
             )}
 
             {cameraState === 'granted' && !isReady && (
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-3"
-                style={{ background: 'rgba(5,5,16,0.72)', backdropFilter: 'blur(6px)' }}>
-                <div className="w-9 h-9 rounded-full border-2 animate-spin"
-                  style={{ borderColor: '#00f0ff', borderTopColor: 'transparent' }} />
-                <p className="text-xs text-gray-300 font-medium">Loading smile AI…</p>
+                style={{ background: 'rgba(12,12,20,0.75)', backdropFilter: 'blur(8px)' }}>
+                <div className="w-7 h-7 rounded-full border-2 animate-spin"
+                  style={{ borderColor: '#818cf8', borderTopColor: 'transparent' }} />
+                <p className="text-xs text-gray-400">Loading AI model…</p>
               </div>
             )}
 
+            {/* In-camera mini progress */}
             {cameraState === 'granted' && isReady && (
-              <AnimatePresence>
-                {isSmiling && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8, y: -4 }} animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.8, y: -4 }} transition={{ type: 'spring', damping: 18 }}
-                    className="absolute top-3 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full flex items-center gap-2"
-                    style={{
-                      background: superActive ? 'rgba(255,170,0,0.18)' : 'rgba(0,240,255,0.18)',
-                      border: `1px solid ${superActive ? 'rgba(255,170,0,0.5)' : 'rgba(0,240,255,0.5)'}`,
-                      backdropFilter: 'blur(12px)',
-                      boxShadow: `0 0 16px ${superActive ? 'rgba(255,170,0,0.3)' : 'rgba(0,240,255,0.3)'}`,
-                    }}
-                  >
-                    <span className="w-2 h-2 rounded-full animate-pulse"
-                      style={{ background: superActive ? '#ffaa00' : '#00f0ff' }} />
-                    <span className="text-[11px] font-black tracking-widest uppercase"
-                      style={{ color: superActive ? '#ffaa00' : '#00f0ff' }}>
-                      {superActive ? 'Super Smile' : 'Smiling'}
-                    </span>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            )}
-
-            {cameraState === 'granted' && isReady && (
-              <div className="absolute bottom-0 left-0 right-0 px-3 pb-2 pt-6 flex flex-col items-center gap-1.5 pointer-events-none"
-                style={{ background: 'linear-gradient(to top,rgba(5,5,16,0.82) 0%,transparent 100%)' }}>
+              <div className="absolute bottom-0 left-0 right-0 px-4 pb-3 pt-8 flex flex-col items-center gap-1.5 pointer-events-none"
+                style={{ background: 'linear-gradient(to top, rgba(12,12,20,0.88) 0%, transparent 100%)' }}>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-2xl font-black tabular-nums leading-none"
-                    style={{ color: superActive ? '#ffaa00' : isBaseComplete ? '#ff00cc' : '#00f0ff', textShadow: '0 0 12px currentColor' }}>
-                    {superActive ? superCount : smileCount}
+                  <span className="text-xl font-bold tabular-nums" style={{ color: accentColor }}>
+                    {displayCount}
                   </span>
-                  <span className="text-[11px] text-gray-400 font-medium">/ {superActive ? SUPER_QUOTA : QUOTA}</span>
+                  <span className="text-[11px] text-gray-500">/ {displayQuota}</span>
                 </div>
                 <div className="flex gap-1.5">
-                  {Array.from({ length: superActive ? SUPER_QUOTA : QUOTA }).map((_, i) => {
-                    const filled = superActive ? superCount : smileCount;
-                    const color  = superActive ? '#ffaa00' : isBaseComplete ? '#ff00cc' : '#00f0ff';
-                    return <div key={i} className="rounded-full transition-all duration-200"
-                      style={{ width: 7, height: 7, background: i < filled ? color : 'rgba(255,255,255,0.2)', boxShadow: i < filled ? `0 0 6px ${color}` : 'none' }} />;
-                  })}
+                  {Array.from({ length: displayQuota }).map((_, i) => (
+                    <div key={i} className="rounded-full transition-all duration-200" style={{
+                      width: 5, height: 5,
+                      background: i < displayCount ? accentColor : 'rgba(255,255,255,0.18)',
+                    }} />
+                  ))}
                 </div>
               </div>
             )}
 
+            {/* Complete overlays */}
             <AnimatePresence>
               {isBaseComplete && !superActive && cameraState === 'granted' && (
-                <motion.div initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
-                  className="absolute bottom-0 left-0 right-0 py-2.5 text-center font-black text-sm tracking-wide"
-                  style={{ background: 'linear-gradient(90deg,rgba(0,240,255,0.25),rgba(255,0,204,0.25))', backdropFilter: 'blur(12px)', color: '#fff' }}>
-                  🎉 Quota Complete!
+                <motion.div initial={{ y: 28, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+                  className="absolute bottom-0 left-0 right-0 py-2.5 text-center text-sm font-semibold text-white"
+                  style={{
+                    background: `linear-gradient(90deg, ${accentColor}28, ${accentColor2}28)`,
+                    backdropFilter: 'blur(12px)',
+                    borderTop: `1px solid ${accentColor}30`,
+                  }}>
+                  Quota complete ✦
                 </motion.div>
               )}
               {superActive && isSuperComplete && cameraState === 'granted' && (
-                <motion.div initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
-                  className="absolute bottom-0 left-0 right-0 py-2.5 text-center font-black text-sm tracking-wide"
-                  style={{ background: 'linear-gradient(90deg,rgba(255,170,0,0.3),rgba(255,0,204,0.3))', backdropFilter: 'blur(12px)', color: '#fff' }}>
-                  🏆 Super Smile Day Complete!
+                <motion.div initial={{ y: 28, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+                  className="absolute bottom-0 left-0 right-0 py-2.5 text-center text-sm font-semibold text-white"
+                  style={{
+                    background: 'rgba(251,191,36,0.18)',
+                    backdropFilter: 'blur(12px)',
+                    borderTop: '1px solid rgba(251,191,36,0.3)',
+                  }}>
+                  Super Smile Day complete ✦
                 </motion.div>
               )}
             </AnimatePresence>
           </motion.div>
 
-          {/* Super Smile CTA */}
+          {/* ── Science card ── */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.22 }}
+            className="rounded-2xl p-4 mb-4"
+            style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
+          >
+            <div className="flex items-center gap-2 mb-2.5">
+              <span className="text-sm">🧠</span>
+              <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-widest">Did you know</span>
+            </div>
+            <p className="text-[13px] text-gray-300 leading-relaxed">
+              <span className="text-white font-semibold">Even a forced smile lifts your mood.</span>{' '}
+              Your face muscles signal your brain to release{' '}
+              <span style={{ color: accentColor2 }} className="font-medium">serotonin</span> and{' '}
+              <span style={{ color: accentColor2 }} className="font-medium">dopamine</span> — the same chemicals as genuine joy.
+            </p>
+          </motion.div>
+
+          {/* ── Super Smile CTA ── */}
           <AnimatePresence>
             {isBaseComplete && !superActive && (
               <motion.div
-                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }} transition={{ delay: 0.15 }}
-                className="rounded-3xl p-5 mb-6"
-                style={{ background: 'linear-gradient(135deg,rgba(255,170,0,0.08),rgba(255,0,204,0.1))', border: '1px solid rgba(255,170,0,0.22)' }}
+                initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 12 }}
+                transition={{ delay: 0.1 }}
+                className="rounded-2xl p-4 mb-4"
+                style={{ background: 'rgba(251,191,36,0.06)', border: '1px solid rgba(251,191,36,0.18)' }}
               >
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-base">⚡</span>
-                  <span className="text-[11px] font-black tracking-widest uppercase" style={{ color: '#ffaa00' }}>Super Smile Day</span>
+                  <span className="text-sm">⚡</span>
+                  <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'rgba(251,191,36,0.7)' }}>
+                    Super Smile Day
+                  </span>
                 </div>
-                <p className="text-sm text-gray-300 leading-relaxed mb-4">
-                  Crush it with <strong className="text-white">10 bonus smiles</strong> to turn today into a{' '}
-                  <span style={{ color: '#ffaa00', fontWeight: 700 }}>Super Smile Day</span>. Double the dopamine, double the glory.
+                <p className="text-[13px] text-gray-300 leading-relaxed mb-4">
+                  Smile <span className="text-white font-semibold">10 more times</span> to unlock a Super Smile Day — double the dopamine, double the glory.
                 </p>
                 <button
                   onClick={() => { setSuperActive(true); superActiveRef.current = true; saveSmileData({ superCount: 0 }); }}
-                  className="w-full py-3 rounded-2xl font-black text-sm btn-press"
-                  style={{ background: 'linear-gradient(135deg,#ffaa00,#ff6600)', boxShadow: '0 0 20px rgba(255,170,0,0.35)', color: '#050510' }}
+                  className="w-full py-3 rounded-xl font-semibold text-sm btn-press"
+                  style={{
+                    background: 'linear-gradient(135deg, #fbbf24, #f97316)',
+                    color: '#0c0c14',
+                  }}
                 >
-                  Go Super! ⚡
+                  Go Super ⚡
                 </button>
               </motion.div>
             )}
@@ -752,15 +821,15 @@ export default function SmileQuota() {
         </div>
       </div>
 
+      {/* Scroll hint */}
       <AnimatePresence>
         {showScrollHint && (
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.3 } }}
-            className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 pointer-events-none z-50"
+            className="absolute bottom-6 left-1/2 -translate-x-1/2 pointer-events-none z-50"
           >
-            <p className="text-[11px] text-gray-400 font-semibold tracking-wide">scroll for more</p>
-            <motion.div animate={{ y: [0,6,0] }} transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}>
-              <ChevronDown size={20} style={{ color: '#00f0ff', filter: 'drop-shadow(0 0 4px #00f0ff88)' }} />
+            <motion.div animate={{ y: [0, 5, 0] }} transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}>
+              <ChevronDown size={18} style={{ color: 'rgba(255,255,255,0.2)' }} />
             </motion.div>
           </motion.div>
         )}

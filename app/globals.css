@@ -1,13 +1,20 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --neon-cyan: #00f0ff;
-  --neon-magenta: #ff00cc;
-  --bg-primary: #050510;
+  --bg: #0c0c14;
+  --surface: rgba(255,255,255,0.04);
+  --border: rgba(255,255,255,0.08);
+  --text: #f1f5f9;
+  --text-2: #94a3b8;
+  --text-3: #4b5563;
+  --violet: #7c3aed;
+  --violet-light: #a78bfa;
+  --green: #34d399;
+  --amber: #fbbf24;
 }
 
 * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
@@ -20,8 +27,8 @@ html, body {
 }
 
 body {
-  background: var(--bg-primary);
-  color: white;
+  background: var(--bg);
+  color: var(--text);
   font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   overscroll-behavior: none;
@@ -35,32 +42,8 @@ body {
   overscroll-behavior: contain;
 }
 
-.btn-press { transition: transform 0.1s ease; }
-.btn-press:active { transform: scale(0.95); }
-
-.cyber-bg {
-  background-color: var(--bg-primary);
-  background-image:
-    linear-gradient(rgba(0,240,255,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,240,255,0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
-}
-
-@keyframes scanline {
-  0% { transform: translateY(-100vh); }
-  100% { transform: translateY(100vh); }
-}
-
-.scanline::after {
-  content: '';
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(0,240,255,0.4), transparent);
-  animation: scanline 6s linear infinite;
-  pointer-events: none;
-  z-index: 9999;
-}
+.btn-press { transition: transform 0.12s ease, opacity 0.12s ease; }
+.btn-press:active { transform: scale(0.96); opacity: 0.85; }
 
 .camera-feed { transform: scaleX(-1); }
 .pb-safe { padding-bottom: env(safe-area-inset-bottom, 16px); }
@@ -72,7 +55,7 @@ body {
 }
 
 .skeleton {
-  background: linear-gradient(90deg, rgba(0,240,255,0.05) 25%, rgba(0,240,255,0.12) 50%, rgba(0,240,255,0.05) 75%);
+  background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.07) 50%, rgba(255,255,255,0.03) 75%);
   background-size: 400px 100%;
   animation: skeleton-shimmer 1.4s ease infinite;
 }
