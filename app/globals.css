@@ -30,7 +30,8 @@ html, body {
 
 body {
   background:
-    radial-gradient(ellipse 65% 40% at 50% 0%, rgba(124,58,237,0.14) 0%, transparent 60%),
+    radial-gradient(ellipse 90% 55% at 50% -5%, rgba(124,58,237,0.32) 0%, rgba(124,58,237,0.08) 45%, transparent 70%),
+    radial-gradient(ellipse 50% 30% at 50% 0%, rgba(168,85,247,0.18) 0%, transparent 50%),
     var(--bg);
   color: var(--text);
   font-family: 'Inter', system-ui, sans-serif;

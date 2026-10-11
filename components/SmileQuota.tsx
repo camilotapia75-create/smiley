@@ -58,35 +58,37 @@ function ProgressRing({ count, quota, isComplete, superActive }: {
   return (
     <svg viewBox="0 0 200 200" className="absolute inset-0 w-full h-full" style={{ transform: 'rotate(-90deg)' }}>
       <defs>
-        {/* Base: deep violet → vivid purple → bright fuchsia */}
         <linearGradient id="rg-base" x1="10" y1="100" x2="190" y2="100" gradientUnits="userSpaceOnUse">
           <stop offset="0%" stopColor="#6d28d9" />
           <stop offset="50%" stopColor="#9333ea" />
           <stop offset="100%" stopColor="#ec4899" />
         </linearGradient>
-        {/* Complete: emerald — stands apart, feels earned */}
         <linearGradient id="rg-done" x1="10" y1="100" x2="190" y2="100" gradientUnits="userSpaceOnUse">
           <stop offset="0%" stopColor="#059669" />
           <stop offset="100%" stopColor="#34d399" />
         </linearGradient>
-        {/* Super: warm amber → orange */}
         <linearGradient id="rg-super" x1="10" y1="100" x2="190" y2="100" gradientUnits="userSpaceOnUse">
           <stop offset="0%" stopColor="#d97706" />
           <stop offset="100%" stopColor="#f97316" />
         </linearGradient>
+        <filter id="ring-glow" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="4" result="blur" />
+          <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+        </filter>
       </defs>
 
-      {/* Track */}
+      {/* Track — faint gradient, always visible */}
       <circle cx="100" cy="100" r={r} fill="none"
-        stroke="rgba(255,255,255,0.06)" strokeWidth="11" />
+        stroke={`url(#${gradId})`} strokeWidth="12" opacity="0.12" />
 
-      {/* Filled arc */}
+      {/* Filled arc with glow */}
       {count > 0 && (
         <circle cx="100" cy="100" r={r} fill="none"
           stroke={`url(#${gradId})`}
-          strokeWidth="11" strokeLinecap="round"
+          strokeWidth="12" strokeLinecap="round"
           strokeDasharray={circ} strokeDashoffset={offset}
-          style={{ transition: 'stroke-dashoffset 0.55s cubic-bezier(0.34,1.56,0.64,1), stroke 0.5s ease' }}
+          filter="url(#ring-glow)"
+          style={{ transition: 'stroke-dashoffset 0.55s cubic-bezier(0.34,1.56,0.64,1)' }}
         />
       )}
     </svg>
@@ -566,7 +568,7 @@ export default function SmileQuota() {
               {/* Subtle radial glow */}
               <div className="absolute inset-0 rounded-full pointer-events-none"
                 style={{
-                  background: `radial-gradient(circle at center, ${accent}14 0%, transparent 65%)`,
+                  background: `radial-gradient(circle at center, ${accent}28 0%, ${accent}08 50%, transparent 70%)`,
                   transition: 'background 0.5s ease',
                 }} />
 
@@ -585,7 +587,8 @@ export default function SmileQuota() {
                     style={{
                       fontSize: 72,
                       color: accent,
-                      transition: 'color 0.45s ease',
+                      filter: `drop-shadow(0 0 18px ${accent}70)`,
+                      transition: 'color 0.45s ease, filter 0.45s ease',
                     }}
                   >
                     {displayCount}
@@ -674,8 +677,9 @@ export default function SmileQuota() {
               ...(cameraState === 'granted' || cameraState === 'requesting'
                 ? { aspectRatio: '4/3' }
                 : { minHeight: 200 }),
-              background: 'rgba(255,255,255,0.025)',
-              border: `1px solid ${isSmiling && cameraState === 'granted' ? 'rgba(52,211,153,0.3)' : 'rgba(255,255,255,0.07)'}`,
+              background: 'rgba(255,255,255,0.035)',
+              border: `1px solid ${isSmiling && cameraState === 'granted' ? 'rgba(52,211,153,0.4)' : 'rgba(255,255,255,0.1)'}`,
+              boxShadow: isSmiling && cameraState === 'granted' ? '0 0 24px rgba(52,211,153,0.08)' : 'none',
               transition: 'border-color 0.3s',
             }}
           >
@@ -687,8 +691,8 @@ export default function SmileQuota() {
             {cameraState === 'idle' && (
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-5 p-6">
                 <div className="w-11 h-11 rounded-2xl flex items-center justify-center"
-                  style={{ background: 'rgba(124,58,237,0.12)', border: '1px solid rgba(124,58,237,0.2)' }}>
-                  <Camera size={20} style={{ color: '#a855f7' }} />
+                  style={{ background: 'rgba(124,58,237,0.22)', border: '1px solid rgba(168,85,247,0.35)', boxShadow: '0 0 20px rgba(124,58,237,0.25)' }}>
+                  <Camera size={20} style={{ color: '#c084fc' }} />
                 </div>
                 <div className="text-center">
                   <p className="text-sm font-semibold text-white mb-1">Enable camera</p>
@@ -697,7 +701,7 @@ export default function SmileQuota() {
                 <button
                   onClick={() => { if (autoStart) localStorage.setItem('smiley_camera_autostart', 'true'); requestCamera(); }}
                   className="px-6 py-2.5 rounded-xl font-semibold text-sm text-white btn-press"
-                  style={{ background: accentGrad }}
+                  style={{ background: accentGrad, boxShadow: '0 4px 28px rgba(124,58,237,0.45)' }}
                 >
                   Allow Camera
                 </button>
