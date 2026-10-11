@@ -31,12 +31,11 @@ html, body {
 body {
   background:
     linear-gradient(160deg,
-      rgba(26,53,112,0.92) 0%,
-      rgba(15,34,72,0.88) 22%,
-      rgba(8,15,46,0.93) 55%,
-      rgba(4,12,30,0.97) 100%
+      rgba(0,0,0,0.52) 0%,
+      rgba(0,0,0,0.42) 40%,
+      rgba(0,0,0,0.55) 100%
     ),
-    url('/smiley-bg.png') center center / cover no-repeat fixed;
+    url('/smiles-bg.webp') center center / cover no-repeat fixed;
   color: var(--text);
   font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
