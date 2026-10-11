@@ -94,15 +94,15 @@ function ProgressRing({ count, quota, isComplete, superActive }: {
         </filter>
       </defs>
 
-      {/* Track — faint gradient, always visible */}
+      {/* Track */}
       <circle cx="100" cy="100" r={r} fill="none"
-        stroke={`url(#${gradId})`} strokeWidth="16" opacity="0.15" />
+        stroke={`url(#${gradId})`} strokeWidth="18" opacity="0.22" />
 
       {/* Filled arc with glow */}
       {count > 0 && (
         <circle cx="100" cy="100" r={r} fill="none"
           stroke={`url(#${gradId})`}
-          strokeWidth="16" strokeLinecap="round"
+          strokeWidth="18" strokeLinecap="round"
           strokeDasharray={circ} strokeDashoffset={offset}
           filter="url(#ring-glow)"
           style={{ transition: 'stroke-dashoffset 0.55s cubic-bezier(0.34,1.56,0.64,1)' }}
@@ -596,10 +596,13 @@ export default function SmileQuota() {
             className="flex flex-col items-center mb-6"
           >
             <div className="relative" style={{ width: 260, height: 260 }}>
-              {/* Radial glow behind ring */}
+              {/* Solid dark backing so ring always pops */}
+              <div className="absolute inset-0 rounded-full pointer-events-none"
+                style={{ background: 'rgba(4,12,30,0.82)' }} />
+              {/* Accent glow on top */}
               <div className="absolute inset-0 rounded-full pointer-events-none"
                 style={{
-                  background: `radial-gradient(circle at center, ${accent}50 0%, ${accent}22 45%, transparent 70%)`,
+                  background: `radial-gradient(circle at center, ${accent}55 0%, ${accent}20 50%, transparent 72%)`,
                   transition: 'background 0.5s ease',
                 }} />
 
@@ -616,9 +619,9 @@ export default function SmileQuota() {
                     transition={{ type: 'spring', damping: 18, stiffness: 300 }}
                     className="font-bold tabular-nums leading-none select-none"
                     style={{
-                      fontSize: 72,
+                      fontSize: 80,
                       color: accent,
-                      filter: `drop-shadow(0 0 18px ${accent}70)`,
+                      filter: `drop-shadow(0 0 24px ${accent}cc) drop-shadow(0 0 8px ${accent}99)`,
                       transition: 'color 0.45s ease, filter 0.45s ease',
                     }}
                   >
