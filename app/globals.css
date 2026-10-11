@@ -29,13 +29,7 @@ html, body {
 }
 
 body {
-  background:
-    linear-gradient(160deg,
-      rgba(0,0,0,0.52) 0%,
-      rgba(0,0,0,0.42) 40%,
-      rgba(0,0,0,0.55) 100%
-    ),
-    url('/smiles-bg.webp') center center / cover no-repeat fixed;
+  background: url('/smiles-bg.webp') center center / cover no-repeat fixed;
   color: var(--text);
   font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;

@@ -477,7 +477,7 @@ export default function SmileQuota() {
           <motion.div
             initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}
             className="absolute top-16 left-4 right-4 z-[60] rounded-2xl px-4 py-3 flex items-center gap-3"
-            style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(20px)' }}
+            style={{ background: 'rgba(4,12,30,0.94)', border: '1px solid rgba(255,255,255,0.14)', backdropFilter: 'blur(20px)' }}
           >
             <Bell size={16} style={{ color: '#60a5fa', flexShrink: 0 }} />
             <div className="flex-1 min-w-0">
@@ -497,7 +497,8 @@ export default function SmileQuota() {
           {/* ── Header ── */}
           <motion.div
             initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}
-            className="flex items-center justify-between pt-4 mb-7"
+            className="flex items-center justify-between pt-4 mb-7 px-3 py-3 rounded-2xl"
+            style={{ background: 'rgba(4,12,30,0.82)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.1)' }}
           >
             <div className="flex items-center gap-2.5">
               <SmileyLogo />
@@ -510,8 +511,8 @@ export default function SmileQuota() {
               onClick={() => setShowSettings(v => !v)}
               className="w-9 h-9 rounded-xl flex items-center justify-center btn-press"
               style={{
-                background: showSettings ? 'rgba(59,130,246,0.15)' : 'rgba(255,255,255,0.05)',
-                border: `1px solid ${showSettings ? 'rgba(59,130,246,0.4)' : 'rgba(255,255,255,0.08)'}`,
+                background: showSettings ? 'rgba(59,130,246,0.25)' : 'rgba(255,255,255,0.1)',
+                border: `1px solid ${showSettings ? 'rgba(59,130,246,0.5)' : 'rgba(255,255,255,0.15)'}`,
               }}
             >
               <Settings size={15} style={{ color: showSettings ? '#60a5fa' : '#5b8dd9' }} />
@@ -527,7 +528,7 @@ export default function SmileQuota() {
                 className="overflow-hidden mb-5"
               >
                 <div className="rounded-2xl p-4 flex flex-col gap-4"
-                  style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                  style={{ background: 'rgba(4,12,30,0.94)', border: '1px solid rgba(255,255,255,0.12)' }}>
 
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
@@ -660,7 +661,7 @@ export default function SmileQuota() {
             </AnimatePresence>
 
             {/* Progress dots */}
-            <div className="mt-4">
+            <div className="mt-4 px-4 py-2.5 rounded-2xl" style={{ background: 'rgba(4,12,30,0.75)', border: '1px solid rgba(255,255,255,0.08)' }}>
               {!superActive && settings.sessionMode === '2x5' ? (
                 <div className="flex flex-col items-center gap-2">
                   {[
@@ -732,7 +733,7 @@ export default function SmileQuota() {
               ...(cameraState === 'granted' || cameraState === 'requesting'
                 ? { aspectRatio: '4/3' }
                 : { minHeight: 200 }),
-              background: 'linear-gradient(160deg, rgba(26,53,112,0.35) 0%, rgba(15,34,72,0.2) 100%)',
+              background: 'rgba(4,12,30,0.88)',
               border: `1px solid ${isSmiling && cameraState === 'granted' ? 'rgba(52,211,153,0.45)' : 'rgba(255,255,255,0.12)'}`,
               boxShadow: isSmiling && cameraState === 'granted' ? '0 0 32px rgba(52,211,153,0.14)' : '0 4px 24px rgba(0,0,0,0.3)',
               transition: 'border-color 0.3s',
@@ -842,7 +843,7 @@ export default function SmileQuota() {
           <motion.div
             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }}
             className="rounded-2xl p-4 mb-4"
-            style={{ background: 'rgba(255,255,255,0.045)', border: '1px solid rgba(255,255,255,0.09)' }}
+            style={{ background: 'rgba(4,12,30,0.88)', border: '1px solid rgba(255,255,255,0.1)' }}
           >
             <div className="flex items-center gap-2 mb-2.5">
               <span className="text-sm">🧠</span>
@@ -865,7 +866,7 @@ export default function SmileQuota() {
                 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
                 transition={{ delay: 0.06 }}
                 className="rounded-2xl p-4 mb-4"
-                style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.24)' }}
+                style={{ background: 'rgba(4,12,30,0.88)', border: '1px solid rgba(245,158,11,0.35)' }}
               >
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-sm">⚡</span>
