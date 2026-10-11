@@ -59,9 +59,9 @@ function ProgressRing({ count, quota, isComplete, superActive }: {
     <svg viewBox="0 0 200 200" className="absolute inset-0 w-full h-full" style={{ transform: 'rotate(-90deg)' }}>
       <defs>
         <linearGradient id="rg-base" x1="10" y1="100" x2="190" y2="100" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#8b5cf6" />
-          <stop offset="50%" stopColor="#c026d3" />
-          <stop offset="100%" stopColor="#fb7185" />
+          <stop offset="0%" stopColor="#2563eb" />
+          <stop offset="50%" stopColor="#3b82f6" />
+          <stop offset="100%" stopColor="#38bdf8" />
         </linearGradient>
         <linearGradient id="rg-done" x1="10" y1="100" x2="190" y2="100" gradientUnits="userSpaceOnUse">
           <stop offset="0%" stopColor="#059669" />
@@ -182,7 +182,7 @@ function scheduleNotification(settings: SmileSettings, count: number) {
 }
 
 function fireFireworks() {
-  const c = ['#7c3aed','#a855f7','#ec4899','#34d399','#f8fafc'];
+  const c = ['#2563eb','#60a5fa','#38bdf8','#34d399','#f8fafc'];
   const s = (a: number, x: number) => confetti({ particleCount: 75, angle: a, spread: 60, origin: { x, y: 0.75 }, colors: c });
   s(60, 0); s(120, 1);
   setTimeout(() => confetti({ particleCount: 140, spread: 90, origin: { x: 0.5, y: 0.5 }, colors: c }), 300);
@@ -191,14 +191,14 @@ function fireFireworks() {
 }
 
 function fireMiniworks() {
-  const c = ['#7c3aed','#a855f7','#f8fafc'];
+  const c = ['#2563eb','#60a5fa','#f8fafc'];
   confetti({ particleCount: 60, spread: 70, origin: { x: 0.5, y: 0.6 }, colors: c });
   setTimeout(() => confetti({ particleCount: 40, spread: 50, origin: { x: 0.3, y: 0.7 }, colors: c }), 300);
   setTimeout(() => confetti({ particleCount: 40, spread: 50, origin: { x: 0.7, y: 0.7 }, colors: c }), 500);
 }
 
 function fireSuperFireworks() {
-  const c = ['#f59e0b','#f97316','#fde68a','#ec4899','#f8fafc'];
+  const c = ['#f59e0b','#f97316','#fde68a','#38bdf8','#f8fafc'];
   const s = (a: number, x: number) => confetti({ particleCount: 100, angle: a, spread: 70, origin: { x, y: 0.75 }, colors: c });
   s(60, 0); s(120, 1);
   setTimeout(() => confetti({ particleCount: 200, spread: 120, origin: { x: 0.5, y: 0.5 }, colors: c }), 200);
@@ -433,13 +433,13 @@ export default function SmileQuota() {
   const displayQuota    = superActive ? SUPER_QUOTA : QUOTA;
 
   // Color shifts with state — vivid purple → green on complete → amber on super
-  const accent  = superActive ? '#fbbf24' : isBaseComplete ? '#34d399' : '#c084fc';
-  const accent2 = superActive ? '#ef4444' : isBaseComplete ? '#059669' : '#8b5cf6';
+  const accent  = superActive ? '#fbbf24' : isBaseComplete ? '#34d399' : '#60a5fa';
+  const accent2 = superActive ? '#ef4444' : isBaseComplete ? '#059669' : '#2563eb';
   const accentGrad = superActive
     ? 'linear-gradient(135deg, #f59e0b, #ef4444)'
     : isBaseComplete
       ? 'linear-gradient(135deg, #059669, #34d399)'
-      : 'linear-gradient(135deg, #8b5cf6, #fb7185)';
+      : 'linear-gradient(135deg, #2563eb, #38bdf8)';
 
   return (
     <div className="relative" style={{ height: '100dvh' }}>
@@ -452,7 +452,7 @@ export default function SmileQuota() {
             className="absolute top-16 left-4 right-4 z-[60] rounded-2xl px-4 py-3 flex items-center gap-3"
             style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(20px)' }}
           >
-            <Bell size={16} style={{ color: '#a855f7', flexShrink: 0 }} />
+            <Bell size={16} style={{ color: '#60a5fa', flexShrink: 0 }} />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-white">Smile reminder</p>
               <p className="text-xs text-slate-400 mt-0.5">You haven&apos;t hit your quota yet today</p>
@@ -474,17 +474,17 @@ export default function SmileQuota() {
           >
             <div>
               <h1 className="text-2xl font-bold tracking-tight text-white leading-tight">Smiley</h1>
-              <p className="text-xs mt-0.5" style={{ color: '#7c6fad' }}>Daily smile quota</p>
+              <p className="text-xs mt-0.5" style={{ color: '#5b8dd9' }}>Daily smile quota</p>
             </div>
             <button
               onClick={() => setShowSettings(v => !v)}
               className="w-9 h-9 rounded-xl flex items-center justify-center btn-press"
               style={{
-                background: showSettings ? 'rgba(124,58,237,0.15)' : 'rgba(255,255,255,0.05)',
-                border: `1px solid ${showSettings ? 'rgba(124,58,237,0.4)' : 'rgba(255,255,255,0.08)'}`,
+                background: showSettings ? 'rgba(59,130,246,0.15)' : 'rgba(255,255,255,0.05)',
+                border: `1px solid ${showSettings ? 'rgba(59,130,246,0.4)' : 'rgba(255,255,255,0.08)'}`,
               }}
             >
-              <Settings size={15} style={{ color: showSettings ? '#a855f7' : '#475569' }} />
+              <Settings size={15} style={{ color: showSettings ? '#60a5fa' : '#5b8dd9' }} />
             </button>
           </motion.div>
 
@@ -502,7 +502,7 @@ export default function SmileQuota() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
                       {settings.notificationsEnabled
-                        ? <Bell size={14} style={{ color: '#a855f7' }} />
+                        ? <Bell size={14} style={{ color: '#60a5fa' }} />
                         : <BellOff size={14} style={{ color: '#475569' }} />}
                       <span className="text-sm font-medium text-white">Reminders</span>
                     </div>
@@ -511,7 +511,7 @@ export default function SmileQuota() {
                       className="relative rounded-full btn-press flex-shrink-0"
                       style={{
                         width: 44, height: 24,
-                        background: settings.notificationsEnabled ? '#7c3aed' : 'rgba(255,255,255,0.1)',
+                        background: settings.notificationsEnabled ? '#3b82f6' : 'rgba(255,255,255,0.1)',
                         transition: 'background 0.2s',
                       }}
                     >
@@ -544,9 +544,9 @@ export default function SmileQuota() {
                         <button key={mode} onClick={() => updateSettings({ sessionMode: mode })}
                           className="flex-1 py-2 rounded-xl text-xs font-medium btn-press"
                           style={{
-                            background: settings.sessionMode === mode ? 'rgba(124,58,237,0.18)' : 'rgba(255,255,255,0.04)',
-                            border: settings.sessionMode === mode ? '1px solid rgba(168,85,247,0.45)' : '1px solid rgba(255,255,255,0.07)',
-                            color: settings.sessionMode === mode ? '#c084fc' : '#475569',
+                            background: settings.sessionMode === mode ? 'rgba(59,130,246,0.18)' : 'rgba(255,255,255,0.04)',
+                            border: settings.sessionMode === mode ? '1px solid rgba(59,130,246,0.45)' : '1px solid rgba(255,255,255,0.07)',
+                            color: settings.sessionMode === mode ? '#93c5fd' : '#5b8dd9',
                           }}>
                           {mode === '1x10' ? '1 session · 10' : '2 sessions · 5 each'}
                         </button>
@@ -623,7 +623,7 @@ export default function SmileQuota() {
                 initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}
                 transition={{ duration: 0.18 }}
                 className="text-[13px] font-medium mt-2.5 text-center"
-                style={{ color: '#9d8ec4' }}
+                style={{ color: '#7aacde' }}
               >
                 {statusMsg(smileCount, settings.sessionMode, superActive, superCount)}
               </motion.p>
@@ -634,8 +634,8 @@ export default function SmileQuota() {
               {!superActive && settings.sessionMode === '2x5' ? (
                 <div className="flex flex-col items-center gap-2">
                   {[
-                    { label: 'S1', c: Math.min(smileCount, 5), color: '#9333ea' },
-                    { label: 'S2', c: Math.max(0, smileCount - 5), color: '#ec4899' },
+                    { label: 'S1', c: Math.min(smileCount, 5), color: '#3b82f6' },
+                    { label: 'S2', c: Math.max(0, smileCount - 5), color: '#38bdf8' },
                   ].map(({ label, c, color }) => (
                     <div key={label} className="flex items-center gap-2.5">
                       <span className="text-[10px] font-medium w-4 text-right" style={{ color: '#334155' }}>{label}</span>
@@ -691,8 +691,8 @@ export default function SmileQuota() {
             {cameraState === 'idle' && (
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-5 p-6">
                 <div className="w-11 h-11 rounded-2xl flex items-center justify-center"
-                  style={{ background: 'rgba(124,58,237,0.22)', border: '1px solid rgba(168,85,247,0.35)', boxShadow: '0 0 20px rgba(124,58,237,0.25)' }}>
-                  <Camera size={20} style={{ color: '#c084fc' }} />
+                  style={{ background: 'rgba(59,130,246,0.2)', border: '1px solid rgba(59,130,246,0.35)', boxShadow: '0 0 20px rgba(59,130,246,0.25)' }}>
+                  <Camera size={20} style={{ color: '#93c5fd' }} />
                 </div>
                 <div className="text-center">
                   <p className="text-sm font-semibold text-white mb-1">Enable camera</p>
@@ -701,7 +701,7 @@ export default function SmileQuota() {
                 <button
                   onClick={() => { if (autoStart) localStorage.setItem('smiley_camera_autostart', 'true'); requestCamera(); }}
                   className="px-6 py-2.5 rounded-xl font-semibold text-sm text-white btn-press"
-                  style={{ background: accentGrad, boxShadow: '0 4px 28px rgba(124,58,237,0.45)' }}
+                  style={{ background: accentGrad, boxShadow: '0 4px 28px rgba(37,99,235,0.5)' }}
                 >
                   Allow Camera
                 </button>
@@ -716,7 +716,7 @@ export default function SmileQuota() {
             {cameraState === 'requesting' && (
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
                 <div className="w-6 h-6 rounded-full border-2 animate-spin"
-                  style={{ borderColor: '#a855f7', borderTopColor: 'transparent' }} />
+                  style={{ borderColor: '#60a5fa', borderTopColor: 'transparent' }} />
                 <p className="text-xs" style={{ color: '#64748b' }}>Starting camera…</p>
               </div>
             )}
@@ -732,7 +732,7 @@ export default function SmileQuota() {
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-3"
                 style={{ background: 'rgba(9,9,15,0.7)', backdropFilter: 'blur(8px)' }}>
                 <div className="w-6 h-6 rounded-full border-2 animate-spin"
-                  style={{ borderColor: '#a855f7', borderTopColor: 'transparent' }} />
+                  style={{ borderColor: '#60a5fa', borderTopColor: 'transparent' }} />
                 <p className="text-xs" style={{ color: '#64748b' }}>Loading AI model…</p>
               </div>
             )}
