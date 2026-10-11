@@ -2,10 +2,27 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Camera, Settings, Bell, BellOff, ChevronDown, X } from 'lucide-react';
+import { Camera, Settings, Bell, BellOff, ChevronDown, X, Share2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useFaceLandmarker } from '@/hooks/useFaceLandmarker';
 import { usePoseLandmarker } from '@/hooks/usePoseLandmarker';
+
+function SmileyLogo() {
+  return (
+    <svg width="34" height="34" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="logo-g" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#2563eb" />
+          <stop offset="100%" stopColor="#38bdf8" />
+        </linearGradient>
+      </defs>
+      <circle cx="20" cy="20" r="17.5" stroke="url(#logo-g)" strokeWidth="2.5" />
+      <circle cx="13.5" cy="15.5" r="2.5" fill="url(#logo-g)" />
+      <circle cx="26.5" cy="15.5" r="2.5" fill="url(#logo-g)" />
+      <path d="M 11.5 23.5 Q 20 31.5 28.5 23.5" stroke="url(#logo-g)" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+    </svg>
+  );
+}
 
 function drawSmileSkeleton(
   ctx: CanvasRenderingContext2D,
@@ -441,6 +458,16 @@ export default function SmileQuota() {
       ? 'linear-gradient(135deg, #059669, #34d399)'
       : 'linear-gradient(135deg, #2563eb, #38bdf8)';
 
+  async function handleShare() {
+    const text = `I hit my daily smile quota! 😊 10 smiles done today — boosting my mood one smile at a time. Science says it releases serotonin & dopamine.`;
+    const url = typeof window !== 'undefined' ? window.location.href : '';
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try { await navigator.share({ title: 'Smiley — Daily Smile Quota', text, url }); } catch { /* cancelled */ }
+    } else {
+      window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text + '\n\n' + url)}`, '_blank', 'noopener,noreferrer');
+    }
+  }
+
   return (
     <div className="relative" style={{ height: '100dvh' }}>
 
@@ -472,9 +499,12 @@ export default function SmileQuota() {
             initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}
             className="flex items-center justify-between pt-4 mb-7"
           >
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight text-white leading-tight">Smiley</h1>
-              <p className="text-xs mt-0.5" style={{ color: '#5b8dd9' }}>Daily smile quota</p>
+            <div className="flex items-center gap-2.5">
+              <SmileyLogo />
+              <div>
+                <h1 className="text-xl font-bold tracking-tight text-white leading-tight">Smiley</h1>
+                <p className="text-xs" style={{ color: '#5b8dd9' }}>Daily smile quota</p>
+              </div>
             </div>
             <button
               onClick={() => setShowSettings(v => !v)}
@@ -667,6 +697,31 @@ export default function SmileQuota() {
                 </div>
               )}
             </div>
+
+            {/* Share on completion */}
+            <AnimatePresence>
+              {isBaseComplete && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.96 }}
+                  transition={{ type: 'spring', damping: 20, stiffness: 260, delay: 0.2 }}
+                  className="mt-5 w-full max-w-xs"
+                >
+                  <button
+                    onClick={handleShare}
+                    className="w-full flex items-center justify-center gap-2.5 py-3 rounded-2xl font-semibold text-sm text-white btn-press"
+                    style={{ background: accentGrad, boxShadow: '0 4px 24px rgba(37,99,235,0.45)' }}
+                  >
+                    <Share2 size={15} />
+                    Share your achievement
+                  </button>
+                  <p className="text-center text-[11px] mt-2" style={{ color: '#5b8dd9' }}>
+                    You hit your smile quota today 🎉
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
 
           {/* ── Camera ── */}
