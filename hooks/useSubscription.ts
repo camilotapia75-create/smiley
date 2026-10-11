@@ -43,5 +43,20 @@ export function useSubscription() {
     if (url) window.location.href = url;
   }
 
-  return { isPro, loading, email, subscribe };
+  async function restore(userEmail: string): Promise<boolean> {
+    try {
+      const res = await fetch(`/api/check-subscription?email=${encodeURIComponent(userEmail)}`);
+      const { active } = await res.json();
+      if (active) {
+        localStorage.setItem(KEY, userEmail);
+        setEmail(userEmail);
+        setIsPro(true);
+      }
+      return active;
+    } catch {
+      return false;
+    }
+  }
+
+  return { isPro, loading, email, subscribe, restore };
 }

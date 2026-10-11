@@ -254,10 +254,13 @@ function statusMsg(count: number, mode: SessionMode, superActive: boolean, super
 export default function SmileQuota() {
   const { isReady, detectSmile }                   = useFaceLandmarker();
   const { detect: detectPose, isReady: poseReady } = usePoseLandmarker();
-  const { isPro, loading: proLoading, subscribe }  = useSubscription();
-  const [showProModal, setShowProModal]            = useState(false);
-  const [proEmail, setProEmail]                    = useState('');
-  const [proLoading2, setProLoading2]              = useState(false);
+  const { isPro, loading: proLoading, subscribe, restore } = useSubscription();
+  const [showProModal, setShowProModal]                   = useState(false);
+  const [proEmail, setProEmail]                           = useState('');
+  const [proLoading2, setProLoading2]                     = useState(false);
+  const [restoreMode, setRestoreMode]                     = useState(false);
+  const [restoreEmail, setRestoreEmail]                   = useState('');
+  const [restoreMsg, setRestoreMsg]                       = useState<string | null>(null);
 
   const videoRef           = useRef<HTMLVideoElement>(null);
   const canvasRef          = useRef<HTMLCanvasElement>(null);
@@ -926,7 +929,7 @@ export default function SmileQuota() {
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="absolute inset-0 z-[100] flex items-end justify-center pb-6 px-4"
             style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(6px)' }}
-            onClick={() => setShowProModal(false)}
+            onClick={() => { setShowProModal(false); setRestoreMode(false); setRestoreMsg(null); }}
           >
             <motion.div
               initial={{ y: 60, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 60, opacity: 0 }}
@@ -940,7 +943,7 @@ export default function SmileQuota() {
                   <Sparkles size={18} style={{ color: '#f97316' }} />
                   <span className="text-lg font-bold text-white">Smiley Pro</span>
                 </div>
-                <button onClick={() => setShowProModal(false)} className="btn-press p-1">
+                <button onClick={() => { setShowProModal(false); setRestoreMode(false); setRestoreMsg(null); }} className="btn-press p-1">
                   <X size={16} style={{ color: '#4a6b9e' }} />
                 </button>
               </div>
@@ -987,6 +990,56 @@ export default function SmileQuota() {
               <p className="text-center text-[11px] mt-3" style={{ color: '#4a6b9e' }}>
                 Cancel anytime · Secured by Stripe
               </p>
+
+              {/* Restore access */}
+              {!restoreMode ? (
+                <button
+                  onClick={() => { setRestoreMode(true); setRestoreMsg(null); }}
+                  className="w-full text-center text-[11px] mt-4 btn-press"
+                  style={{ color: '#4a6b9e' }}
+                >
+                  Already subscribed? Restore access
+                </button>
+              ) : (
+                <div className="mt-4 flex flex-col gap-2">
+                  <p className="text-[11px] text-center" style={{ color: '#7aa8d4' }}>Enter the email you used to subscribe</p>
+                  <input
+                    type="email"
+                    placeholder="your@email.com"
+                    value={restoreEmail}
+                    onChange={e => { setRestoreEmail(e.target.value); setRestoreMsg(null); }}
+                    className="w-full px-4 py-3 rounded-xl text-sm text-white bg-transparent border outline-none"
+                    style={{ borderColor: 'rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.05)' }}
+                  />
+                  {restoreMsg && (
+                    <p className="text-[11px] text-center" style={{ color: restoreMsg.startsWith('✓') ? '#34d399' : '#f87171' }}>
+                      {restoreMsg}
+                    </p>
+                  )}
+                  <button
+                    disabled={!restoreEmail || proLoading2}
+                    onClick={async () => {
+                      setProLoading2(true);
+                      const ok = await restore(restoreEmail);
+                      setProLoading2(false);
+                      if (ok) {
+                        setRestoreMsg('✓ Access restored!');
+                        setTimeout(() => setShowProModal(false), 1200);
+                      } else {
+                        setRestoreMsg('No active subscription found for that email.');
+                      }
+                    }}
+                    className="w-full py-2.5 rounded-xl font-semibold text-sm text-white btn-press disabled:opacity-50"
+                    style={{ background: 'rgba(59,130,246,0.25)', border: '1px solid rgba(59,130,246,0.4)' }}
+                  >
+                    {proLoading2 ? 'Checking…' : 'Restore access'}
+                  </button>
+                  <button onClick={() => { setRestoreMode(false); setRestoreMsg(null); }}
+                    className="text-[11px] text-center btn-press" style={{ color: '#4a6b9e' }}>
+                    Back
+                  </button>
+                </div>
+              )}
             </motion.div>
           </motion.div>
         )}
