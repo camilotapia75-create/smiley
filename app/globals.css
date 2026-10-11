@@ -5,15 +5,15 @@
 @tailwind utilities;
 
 :root {
-  --bg: #09090f;
-  --surface: rgba(255,255,255,0.04);
-  --border: rgba(255,255,255,0.08);
+  --bg: #0b0420;
+  --surface: rgba(255,255,255,0.07);
+  --border: rgba(255,255,255,0.12);
   --text: #f8fafc;
-  --text-2: #94a3b8;
-  --text-3: #475569;
-  --violet: #7c3aed;
-  --violet-mid: #9333ea;
-  --violet-light: #a855f7;
+  --text-2: #c4b5fd;
+  --text-3: #7c6fad;
+  --violet: #8b5cf6;
+  --violet-mid: #a855f7;
+  --violet-light: #c084fc;
   --green: #10b981;
   --green-light: #34d399;
   --amber: #f59e0b;
@@ -30,9 +30,12 @@ html, body {
 
 body {
   background:
-    radial-gradient(ellipse 90% 55% at 50% -5%, rgba(124,58,237,0.32) 0%, rgba(124,58,237,0.08) 45%, transparent 70%),
-    radial-gradient(ellipse 50% 30% at 50% 0%, rgba(168,85,247,0.18) 0%, transparent 50%),
-    var(--bg);
+    linear-gradient(160deg,
+      #2e0f6e 0%,
+      #1a0850 20%,
+      #0e0630 55%,
+      #080320 100%
+    );
   color: var(--text);
   font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;

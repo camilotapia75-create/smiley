@@ -59,17 +59,17 @@ function ProgressRing({ count, quota, isComplete, superActive }: {
     <svg viewBox="0 0 200 200" className="absolute inset-0 w-full h-full" style={{ transform: 'rotate(-90deg)' }}>
       <defs>
         <linearGradient id="rg-base" x1="10" y1="100" x2="190" y2="100" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#6d28d9" />
-          <stop offset="50%" stopColor="#9333ea" />
-          <stop offset="100%" stopColor="#ec4899" />
+          <stop offset="0%" stopColor="#8b5cf6" />
+          <stop offset="50%" stopColor="#c026d3" />
+          <stop offset="100%" stopColor="#fb7185" />
         </linearGradient>
         <linearGradient id="rg-done" x1="10" y1="100" x2="190" y2="100" gradientUnits="userSpaceOnUse">
           <stop offset="0%" stopColor="#059669" />
           <stop offset="100%" stopColor="#34d399" />
         </linearGradient>
         <linearGradient id="rg-super" x1="10" y1="100" x2="190" y2="100" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#d97706" />
-          <stop offset="100%" stopColor="#f97316" />
+          <stop offset="0%" stopColor="#f59e0b" />
+          <stop offset="100%" stopColor="#ef4444" />
         </linearGradient>
         <filter id="ring-glow" x="-20%" y="-20%" width="140%" height="140%">
           <feGaussianBlur stdDeviation="4" result="blur" />
@@ -79,13 +79,13 @@ function ProgressRing({ count, quota, isComplete, superActive }: {
 
       {/* Track — faint gradient, always visible */}
       <circle cx="100" cy="100" r={r} fill="none"
-        stroke={`url(#${gradId})`} strokeWidth="12" opacity="0.12" />
+        stroke={`url(#${gradId})`} strokeWidth="16" opacity="0.15" />
 
       {/* Filled arc with glow */}
       {count > 0 && (
         <circle cx="100" cy="100" r={r} fill="none"
           stroke={`url(#${gradId})`}
-          strokeWidth="12" strokeLinecap="round"
+          strokeWidth="16" strokeLinecap="round"
           strokeDasharray={circ} strokeDashoffset={offset}
           filter="url(#ring-glow)"
           style={{ transition: 'stroke-dashoffset 0.55s cubic-bezier(0.34,1.56,0.64,1)' }}
@@ -433,13 +433,13 @@ export default function SmileQuota() {
   const displayQuota    = superActive ? SUPER_QUOTA : QUOTA;
 
   // Color shifts with state — vivid purple → green on complete → amber on super
-  const accent  = superActive ? '#f59e0b' : isBaseComplete ? '#34d399' : '#a855f7';
-  const accent2 = superActive ? '#f97316' : isBaseComplete ? '#059669' : '#7c3aed';
+  const accent  = superActive ? '#fbbf24' : isBaseComplete ? '#34d399' : '#c084fc';
+  const accent2 = superActive ? '#ef4444' : isBaseComplete ? '#059669' : '#8b5cf6';
   const accentGrad = superActive
-    ? 'linear-gradient(135deg, #d97706, #f97316)'
+    ? 'linear-gradient(135deg, #f59e0b, #ef4444)'
     : isBaseComplete
       ? 'linear-gradient(135deg, #059669, #34d399)'
-      : 'linear-gradient(135deg, #7c3aed, #ec4899)';
+      : 'linear-gradient(135deg, #8b5cf6, #fb7185)';
 
   return (
     <div className="relative" style={{ height: '100dvh' }}>
@@ -474,7 +474,7 @@ export default function SmileQuota() {
           >
             <div>
               <h1 className="text-2xl font-bold tracking-tight text-white leading-tight">Smiley</h1>
-              <p className="text-xs mt-0.5" style={{ color: '#475569' }}>Daily smile quota</p>
+              <p className="text-xs mt-0.5" style={{ color: '#7c6fad' }}>Daily smile quota</p>
             </div>
             <button
               onClick={() => setShowSettings(v => !v)}
@@ -623,7 +623,7 @@ export default function SmileQuota() {
                 initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}
                 transition={{ duration: 0.18 }}
                 className="text-[13px] font-medium mt-2.5 text-center"
-                style={{ color: '#64748b' }}
+                style={{ color: '#9d8ec4' }}
               >
                 {statusMsg(smileCount, settings.sessionMode, superActive, superCount)}
               </motion.p>
